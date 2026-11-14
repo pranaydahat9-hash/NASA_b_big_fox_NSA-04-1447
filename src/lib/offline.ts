@@ -1,8 +1,13 @@
 // Offline storage: map tiles in Cache Storage, reports in IndexedDB, last data in localStorage.
 export const TILE_CACHE = "fox-tiles-v1";
-export const TILE_URL = "https://{s}.basemaps.cartocdn.com/{style}/{z}/{x}/{y}.png";
-export const tileUrl = (style: string, z: number, x: number, y: number, s = "a") =>
-  TILE_URL.replace("{s}", s).replace("{style}", style).replace("{z}", String(z)).replace("{x}", String(x)).replace("{y}", String(y));
+export type BaseStyle = "dark" | "light";
+// Keyless tile providers (CARTO basemaps now require an API key).
+export const TILE_PROVIDERS: Record<BaseStyle, { url: string; attribution: string }> = {
+  dark: { url: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", attribution: "© OpenStreetMap contributors © Esri" },
+  light: { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: "© OpenStreetMap contributors" },
+};
+export const tileUrl = (style: BaseStyle, z: number, x: number, y: number) =>
+  TILE_PROVIDERS[style].url.replace("{z}", String(z)).replace("{x}", String(x)).replace("{y}", String(y));
 
 export function lonLatToTile(lon: number, lat: number, z: number) {
   const x = Math.floor(((lon + 180) / 360) * 2 ** z);
@@ -21,7 +26,7 @@ export function tilesForArea(lat: number, lon: number, radiusKm: number, zooms: 
   return list;
 }
 
-export async function downloadArea(style: string, lat: number, lon: number, radiusKm: number, onProgress: (done: number, total: number) => void) {
+export async function downloadArea(style: BaseStyle, lat: number, lon: number, radiusKm: number, onProgress: (done: number, total: number) => void) {
   const cache = await caches.open(TILE_CACHE);
   const tiles = tilesForArea(lat, lon, radiusKm, [10, 11, 12, 13, 14, 15]);
   let done = 0;

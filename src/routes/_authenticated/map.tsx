@@ -9,7 +9,7 @@ import { requestLocation, getLastLocation } from "@/lib/location";
 import { useSettings } from "@/lib/settings";
 import { t } from "@/lib/i18n";
 import { setFoxContext } from "@/lib/fox-bus";
-import { downloadArea, saveArea, cachedTileBlobUrl } from "@/lib/offline";
+import { downloadArea, saveArea, cachedTileBlobUrl, TILE_PROVIDERS, type BaseStyle } from "@/lib/offline";
 import { buildReportPdf } from "@/lib/pdf";
 import { saveReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,7 +54,7 @@ function MapPage() {
   const revFn = useServerFn(reverseGeocode);
   const safeFn = useServerFn(getSafeZones);
   const routeFn = useServerFn(getRoute);
-  const style = s.theme === "abyss" ? "dark_all" : "rastertiles/voyager";
+  const style: BaseStyle = s.theme === "abyss" ? "dark" : "light";
 
   useEffect(() => { const id = setTimeout(() => setQDeb(q), 300); return () => clearTimeout(id); }, [q]);
   const suggestions = useQuery({ queryKey: ["places", qDeb], enabled: qDeb.length >= 2 && qDeb !== point?.name, queryFn: () => searchFn({ data: { q: qDeb } }) });
@@ -85,7 +85,7 @@ function MapPage() {
           return img;
         },
       });
-      layers.current["base"] = new (Cached as any)(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`, { subdomains: ["a"], maxZoom: 18, attribution: "© OpenStreetMap © CARTO" }).addTo(map);
+      layers.current["base"] = new (Cached as any)(TILE_PROVIDERS[style].url, { maxZoom: 18, attribution: TILE_PROVIDERS[style].attribution }).addTo(map);
       L.control.zoom({ position: "topright" }).addTo(map);
       map.on("click", (e: any) => pick(e.latlng.lat, e.latlng.lng));
       mapRef.current = map;
@@ -106,7 +106,7 @@ function MapPage() {
   useEffect(() => { if (search.lat != null && search.lon != null && mapRef.current) pick(search.lat, search.lon); if (search.safe) { setShow((x) => ({ ...x, safe: true })); setSheet("safe"); } /* eslint-disable-next-line */ }, [search.lat, search.lon, search.safe]);
 
   // Base style switch
-  useEffect(() => { layers.current["base"]?.setUrl(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`); }, [style]);
+  useEffect(() => { layers.current["base"]?.setUrl(TILE_PROVIDERS[style].url); }, [style]);
 
   // Overlays
   const icon = (color: string, size = 12, pulse = false) => Lref.current?.divIcon({ className: "fox-pin", iconSize: [size, size], html: `${pulse ? `<span class="ring" style="background:${color}"></span>` : ""}<span class="dot" style="background:${color};box-shadow:0 0 8px ${color}"></span>` });

@@ -17,7 +17,7 @@ async function mapImage(lat: number, lon: number, zones: { lat: number; lon: num
     const x0 = Math.floor(fx - W / 2), y0 = Math.floor(fy - H / 2);
     await Promise.all(Array.from({ length: W * H }, async (_, i) => {
       const tx = x0 + (i % W), ty = y0 + Math.floor(i / W);
-      const img = new Image(); img.crossOrigin = "anonymous"; img.src = tileUrl("rastertiles/voyager", z, tx, ty);
+      const img = new Image(); img.crossOrigin = "anonymous"; img.src = tileUrl("light", z, tx, ty);
       await img.decode(); g.drawImage(img, (i % W) * 256, Math.floor(i / W) * 256);
     }));
     const px = (la: number, lo: number) => {
