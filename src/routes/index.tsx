@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { FoxMark } from "@/components/app/FoxMark";
 import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
-  head: () => ({ meta: [{ title: "FOX — Satellite Disaster Watch" }, { name: "description", content: "Disaster predictions for any place from NASA, USGS and weather satellites, with SOS and a voice agent." }, { property: "og:title", content: "FOX — Satellite Disaster Watch" }, { property: "og:description", content: "Disaster predictions for any place from NASA, USGS and weather satellites." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "FOX — Satellite Disaster Watch" }, { name: "description", content: "Disaster predictions for any place from NASA, USGS and weather satellites, with SOS and a voice agent." }, { property: "og:title", content: "FOX — Satellite Disaster Watch" }, { property: "og:description", content: "Disaster predictions for any place from NASA, USGS and weather satellites." }] }),
   component: () => (
     <div className="grid-bg flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
       <FoxMark className="h-20 w-20" />

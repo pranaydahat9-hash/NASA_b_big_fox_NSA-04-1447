@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, BarChart, Bar, Cell } from "recharts";
@@ -9,10 +9,11 @@ import { getClimateTrend } from "@/lib/hazards.functions";
 import { Panel, ago } from "@/components/app/bits";
 import { Button } from "@/components/ui/button";
 import { haptic } from "@/lib/haptics";
+import { setFoxContext } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/trends")({
-  head: () => ({ meta: [{ title: "Climate trends & regional comparison — FOX" }, { name: "description", content: "Compare NASA climate trends between regions with statistical tests and automated investigation reports." }, { property: "og:title", content: "Climate trends — FOX" }, { property: "og:description", content: "NASA POWER trends compared across regions, with automated reports." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Climate trends & regional comparison — FOX" }, { name: "description", content: "Compare NASA climate trends between regions with statistical tests and automated investigation reports." }, { property: "og:title", content: "Climate trends — FOX" }, { property: "og:description", content: "NASA POWER trends compared across regions, with automated reports." }] }),
   component: Trends,
 });
 
@@ -59,6 +60,10 @@ function Trends() {
     const risk = p.kind.includes("glacier") ? (t!.tempPerDecade > 0.2 ? "Accelerating melt raises glacial-lake outburst and downstream flood risk." : "Melt signal present but modest.") : t!.precipPerDecade > 0.1 ? "Wetter trend — more frequent heavy-rain and urban flooding likely." : t!.tempPerDecade > 0.25 ? "Strong warming — heat-wave days likely increasing." : "No strong hazard shift detected.";
     return { p, t: t!, text: `${p.name} (${p.kind}) ${t!.tempPerDecade >= 0 ? "warmed +" : "cooled "}${t!.tempPerDecade} °C per decade between ${t!.years[0]?.year} and ${t!.years.at(-1)?.year} (R² ${t!.tempR2}, ${sig ? "statistically significant, p<0.05" : `not significant, p~${Number(t!.tempP).toFixed(2)}`}). Precipitation changed ${t!.precipPerDecade >= 0 ? "+" : ""}${t!.precipPerDecade} mm/day per decade${p.kind.includes("glacier") ? `; the melt season changed ${melt >= 0 ? "+" : ""}${melt} months per decade` : ""}. ${risk}` };
   });
+  useEffect(() => {
+    setFoxContext("NASA climate graphs", rows.filter(r=>r.t).map(({p,t})=>`${p.name}: ${JSON.stringify(t)}; selected metric ${METRIC[metric].label} (${METRIC[metric].unit})`).join("\n"));
+    return () => setFoxContext("NASA climate graphs", null);
+  }, [metric, rows.map(r=>r.t?.source.fetchedAt).join(), sel.join()]);
   const summary = fastest && slowest && fastest !== slowest ? `Trends differ by location: ${fastest.p.name} is warming fastest (${fastest.t!.tempPerDecade} °C/decade) while ${slowest.p.name} is slowest (${slowest.t!.tempPerDecade} °C/decade) — a ${(fastest.t!.tempPerDecade - slowest.t!.tempPerDecade).toFixed(2)} °C/decade gap. One national number would hide this, so alerts must be local.` : null;
 
   async function pdf() {

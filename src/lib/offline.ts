@@ -27,19 +27,21 @@ export function tilesForArea(lat: number, lon: number, radiusKm: number, zooms: 
 }
 
 export async function downloadArea(style: BaseStyle, lat: number, lon: number, radiusKm: number, onProgress: (done: number, total: number) => void) {
+  if (style === "light") throw new Error("The standard OpenStreetMap tile service does not permit bulk offline downloads. Switch to Dark blue for Esri map downloads; safe-zone PDFs remain available.");
   const cache = await caches.open(TILE_CACHE);
   const tiles = tilesForArea(lat, lon, radiusKm, [10, 11, 12, 13, 14, 15]);
-  let done = 0;
+  let done = 0, failed = 0;
   const queue = [...tiles];
   const worker = async () => {
     while (queue.length) {
-      const t = queue.shift()!;
+      const t = queue.shift(); if (!t) break;
       const url = tileUrl(style, t.z, t.x, t.y);
-      try { if (!(await cache.match(url))) { const r = await fetch(url, { mode: "cors" }); if (r.ok) await cache.put(url, r); } } catch {}
+      try { if (!(await cache.match(url))) { const r = await fetch(url, { mode: "cors" }); if (!r.ok) throw new Error("Tile unavailable"); await cache.put(url, r); } } catch { failed++; }
       onProgress(++done, tiles.length);
     }
   };
   await Promise.all(Array.from({ length: 6 }, worker));
+  if (failed) throw new Error(`${failed} of ${tiles.length} map tiles could not be saved. No complete area was marked downloaded; retry when connected.`);
   return tiles.length;
 }
 
@@ -47,7 +49,7 @@ export async function cachedTileBlobUrl(url: string): Promise<string | null> {
   try { const c = await caches.open(TILE_CACHE); const r = await c.match(url); if (!r) return null; return URL.createObjectURL(await r.blob()); } catch { return null; }
 }
 
-export type OfflineArea = { id: string; name: string; lat: number; lon: number; radiusKm: number; tiles: number; savedAt: string; zones: any[] };
+export type OfflineArea = { id: string; name: string; lat: number; lon: number; radiusKm: number; tiles: number; style?: BaseStyle; savedAt: string; zones: any[] };
 export const listAreas = (): OfflineArea[] => { try { return JSON.parse(localStorage.getItem("fox.offlineAreas") || "[]"); } catch { return []; } };
 export const saveArea = (a: OfflineArea) => localStorage.setItem("fox.offlineAreas", JSON.stringify([a, ...listAreas().filter((x) => x.id !== a.id)]));
 export const removeArea = (id: string) => localStorage.setItem("fox.offlineAreas", JSON.stringify(listAreas().filter((x) => x.id !== id)));
@@ -63,7 +65,15 @@ function db(): Promise<IDBDatabase> {
 export type SavedReport = { id: string; title: string; place: string; createdAt: string; level: string; blob: Blob };
 export async function saveReport(r: SavedReport) { const d = await db(); await new Promise((res, rej) => { const tx = d.transaction("reports", "readwrite"); tx.objectStore("reports").put(r); tx.oncomplete = res; tx.onerror = () => rej(tx.error); }); }
 export async function listReports(): Promise<SavedReport[]> { const d = await db(); return new Promise((res) => { const q = d.transaction("reports").objectStore("reports").getAll(); q.onsuccess = () => res((q.result as SavedReport[]).sort((a, b) => b.createdAt.localeCompare(a.createdAt))); }); }
-export async function deleteReport(id: string) { const d = await db(); d.transaction("reports", "readwrite").objectStore("reports").delete(id); }
+export async function deleteReport(id: string) { const d = await db(); await new Promise<void>((resolve,reject)=>{ const tx=d.transaction("reports","readwrite");tx.objectStore("reports").delete(id);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error); }); }
 
 export function cacheJson(key: string, v: unknown) { try { localStorage.setItem("fox.cache." + key, JSON.stringify({ at: new Date().toISOString(), v })); } catch {} }
 export function readJson<T>(key: string): { at: string; v: T } | null { try { return JSON.parse(localStorage.getItem("fox.cache." + key) || "null"); } catch { return null; } }
+
+export async function deleteOfflineArea(id: string) {
+ const area = listAreas().find(a=>a.id===id); if (!area) return;
+ removeArea(id);
+ const cache = await caches.open(TILE_CACHE);
+ const others = new Set(listAreas().flatMap(a=>tilesForArea(a.lat,a.lon,a.radiusKm,[10,11,12,13,14,15]).flatMap(t=>["dark","light"].map(style=>tileUrl(style as BaseStyle,t.z,t.x,t.y)))));
+ for (const t of tilesForArea(area.lat,area.lon,area.radiusKm,[10,11,12,13,14,15])) for (const style of ["dark","light"] as const) { const url=tileUrl(style,t.z,t.x,t.y); if (!others.has(url)) await cache.delete(url); }
+}

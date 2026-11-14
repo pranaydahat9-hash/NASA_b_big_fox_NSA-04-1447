@@ -13,7 +13,7 @@ import { setFoxContext } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Risk dashboard — FOX" }, { name: "description", content: "Live disaster risk for your location: floods, storms, heat, quakes and fires from real satellite and sensor data." }, { property: "og:title", content: "Risk dashboard — FOX" }, { property: "og:description", content: "Live disaster risk for your location from real satellite and sensor data." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Risk dashboard — FOX" }, { name: "description", content: "Live disaster risk for your location: floods, storms, heat, quakes and fires from real satellite and sensor data." }, { property: "og:title", content: "Risk dashboard — FOX" }, { property: "og:description", content: "Live disaster risk for your location from real satellite and sensor data." }] }),
   component: Dashboard,
 });
 

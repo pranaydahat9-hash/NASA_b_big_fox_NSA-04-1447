@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Application upgrade rules
+- Execute common FOX commands locally and validate AI actions against allowlists; emergency-information queries must not dispatch SOS.
+- Treat only provider `delivered` as confirmed SMS delivery; refresh statuses through owner-scoped SOS event IDs, never arbitrary provider IDs.
+- Parse and validate FIRMS CSV headers before accepting fire data; unavailable satellite coverage must not be presented as zero detections.
+- Do not bulk-download standard OpenStreetMap tiles; only mark an area complete after every permitted tile is cached.
+- Keep incident confirmations private and explicitly distinguish owner observations from independent verification.

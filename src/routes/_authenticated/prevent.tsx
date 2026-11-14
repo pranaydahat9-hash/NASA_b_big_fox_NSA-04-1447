@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import type { HazardType } from "@/lib/hazard-model";
 
 export const Route = createFileRoute("/_authenticated/prevent")({
-  head: () => ({ meta: [{ title: "Prevent — weather, water & glaciers — FOX" }, { name: "description", content: "Weather outlook, river and sea levels, glacier melt trends from NASA data, and prevention checklists before disaster strikes." }, { property: "og:title", content: "Prevent — FOX" }, { property: "og:description", content: "Act before disaster strikes: outlooks, water levels and NASA climate trends." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Prevent — weather, water & glaciers — FOX" }, { name: "description", content: "Weather outlook, river and sea levels, glacier melt trends from NASA data, and prevention checklists before disaster strikes." }, { property: "og:title", content: "Prevent — FOX" }, { property: "og:description", content: "Act before disaster strikes: outlooks, water levels and NASA climate trends." }] }),
   component: Prevent,
 });
 

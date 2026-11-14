@@ -63,7 +63,7 @@
   --card-foreground: oklch(0.96 0.015 260);
   --popover: oklch(0.2 0.06 268);
   --popover-foreground: oklch(0.96 0.015 260);
-  --primary: oklch(0.7 0.24 350);
+  --primary: oklch(0.76 0.14 230);
   --primary-foreground: oklch(0.16 0.045 268);
   --secondary: oklch(0.27 0.07 265);
   --secondary-foreground: oklch(0.94 0.02 260);
@@ -75,7 +75,7 @@
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.42 0.09 275 / 0.35);
   --input: oklch(0.42 0.09 275 / 0.45);
-  --ring: oklch(0.7 0.24 350);
+  --ring: oklch(0.76 0.14 230);
   --neon: oklch(0.7 0.26 350);
   --cyan: oklch(0.82 0.14 210);
   --hazard-low: oklch(0.76 0.19 150);
@@ -93,7 +93,7 @@
   --shadow-glow: 0 0 0 1px oklch(0.7 0.26 350 / 0.35), 0 10px 40px -10px oklch(0.7 0.26 350 / 0.55);
   --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.05) inset, 0 20px 40px -24px oklch(0 0 0 / 0.7);
   --grid-line: oklch(0.6 0.12 270 / 0.08);
-  --gradient-band: linear-gradient(135deg, oklch(0.32 0.12 300), oklch(0.28 0.1 268));
+  --gradient-band: linear-gradient(135deg, oklch(0.35 0.11 240), oklch(0.28 0.1 268));
 }
 
 .theme-light {
@@ -168,7 +168,7 @@
     font-family: var(--font-sans);
     -webkit-tap-highlight-color: transparent;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: 0; }
   html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after { animation: none !important; transition: none !important; }
   html.high-contrast { --border: oklch(0.8 0.05 270); --muted-foreground: var(--foreground); }
 }
@@ -227,3 +227,6 @@
 .fox-pin { position: relative; }
 .fox-pin span.dot { position:absolute; inset: 0; border-radius: 9999px; }
 .fox-pin span.ring { position:absolute; inset: 0; border-radius: 9999px; animation: ping-slow 1.8s cubic-bezier(0,0,.2,1) infinite; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }

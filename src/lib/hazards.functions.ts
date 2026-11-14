@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { parseFireCsv } from "./fire-data";
 import {
   type Hazard, type Level, type Reading, alertTier, floodLevel, rainLevel, heatLevel, windLevel,
   quakeLevel, fireLevel, shakingRadiusKm, scoreFromLevel, hazardArea, maxLevel, haversineKm, linearTrend,
@@ -221,30 +222,23 @@ export const assessArea = createServerFn({ method: "GET" })
     if (!eo) unavailable.push("NASA EONET did not respond");
 
     // ---- NASA FIRMS ----
-    const fires: Assessment["fires"] = { count: 0, nearestKm: null, configured: !!firmsKey, points: [] };
-    if (firmsCsv) {
-      const lines = firmsCsv.trim().split("\n");
-      const head = (lines[0] ?? "").split(",");
-      const iLat = head.indexOf("latitude"), iLon = head.indexOf("longitude"), iFrp = head.indexOf("frp"), iDate = head.indexOf("acq_date");
-      for (const l of lines.slice(1)) {
-        const c = l.split(",");
-        const p = { lat: Number(c[iLat]), lon: Number(c[iLon]), frp: Number(c[iFrp]), date: c[iDate] ?? "" };
-        if (Number.isFinite(p.lat)) fires.points.push(p);
-      }
+    const parsedFires = firmsCsv == null ? null : parseFireCsv(firmsCsv);
+    const fires: Assessment["fires"] = { count: 0, nearestKm: null, configured: parsedFires != null, points: parsedFires ?? [] };
+    if (parsedFires) {
       const dists = fires.points.map((p) => haversineKm({ lat, lon }, p)).filter((x) => x <= 50);
       fires.count = dists.length; fires.nearestKm = dists.length ? Math.round(Math.min(...dists)) : null;
-    } else if (!firmsKey) unavailable.push("NASA FIRMS active fires: MAP_KEY not configured");
+    } else unavailable.push(firmsKey ? "NASA FIRMS active fires: request failed or response invalid; fire coverage unknown" : "NASA FIRMS active fires: MAP_KEY not configured");
     {
       const eoFire = events.filter((e) => /fire/i.test(e.category) && e.distKm < 100);
       const lvl = maxLevel([fireLevel(fires.count, fires.nearestKm), eoFire.length ? "medium" : "low"]);
       hazards.push({
         type: "wildfire", level: lvl, score: scoreFromLevel(lvl, Math.min(1, fires.count / 50)), peakAt: fires.points[0]?.date ?? eoFire[0]?.date ?? null,
         window: fires.configured ? `${fires.count} VIIRS hotspots within 50 km (last 48 h)` : `${eoFire.length} NASA EONET wildfire events within 100 km`,
-        harm: lvl !== "low" ? "Active fire detections nearby: smoke exposure; be ready to evacuate if fire front approaches." : "No active fire detections nearby.",
+        harm: lvl !== "low" ? "Active fire detections nearby: smoke exposure; be ready to evacuate if fire front approaches." : fires.configured ? "No active fire detections nearby in this satellite response; this is not an all-clear." : "Satellite fire coverage unavailable; absence of an EONET report does not establish safety.",
         relevance: fires.nearestKm != null ? `Nearest hotspot ${fires.nearestKm} km` : "Satellite thermal anomalies (375 m pixels).",
         ...hazardArea(lvl === "low" ? 0 : Math.max(2, Math.sqrt((fires.count * 0.14) / Math.PI) + 3)),
         readings: [
-          ...(fires.configured ? [{ label: "VIIRS S-NPP NRT hotspots", value: String(fires.count), observedAt: nowIso, source: "NASA FIRMS", url: "https://firms.modaps.eosdis.nasa.gov/" }] : []),
+          ...(fires.configured ? [{ label: "VIIRS S-NPP NRT hotspots", value: String(fires.count), observedAt: fires.points.map(p => p.date).sort().at(-1) ?? nowIso, source: "NASA FIRMS", url: "https://firms.modaps.eosdis.nasa.gov/" }] : []),
           ...eoFire.slice(0, 2).map((e) => ({ label: e.title, value: `${e.distKm} km`, observedAt: e.date, source: "NASA EONET", url: e.url })),
         ],
       });

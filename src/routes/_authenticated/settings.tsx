@@ -18,7 +18,7 @@ import { emitFox } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Settings — FOX" }, { name: "description", content: "Language, themes, accessibility, notifications, saved places and account settings for FOX." }, { property: "og:title", content: "Settings — FOX" }, { property: "og:description", content: "Personalise FOX: language, themes, accessibility and alerts." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Settings — FOX" }, { name: "description", content: "Language, themes, accessibility, notifications, saved places and account settings for FOX." }, { property: "og:title", content: "Settings — FOX" }, { property: "og:description", content: "Personalise FOX: language, themes, accessibility and alerts." }] }),
   component: SettingsPage,
 });
 
@@ -32,7 +32,7 @@ function Row({ label, k, hint }: { label: string; k: keyof Settings; hint?: stri
   );
 }
 function Chips<T extends string>({ value, options, onChange }: { value: T; options: { v: T; l: string }[]; onChange: (v: T) => void }) {
-  return <div className="flex flex-wrap gap-1.5">{options.map((o) => <button key={o.v} onClick={() => { haptic("tap"); onChange(o.v); }} className={cn("rounded-full border px-3 py-1.5 text-xs transition active:scale-95", value === o.v ? "border-primary bg-primary/15 text-primary" : "bg-surface/60")}>{o.l}</button>)}</div>;
+  return <div className="flex flex-wrap gap-1.5">{options.map((o) => <Button size="sm" variant="outline" key={o.v} onClick={() => { haptic("tap"); onChange(o.v); }} className={cn("rounded-full border px-3 py-1.5 text-xs transition active:scale-95", value === o.v ? "border-primary bg-primary/15 text-primary" : "bg-surface/60")}>{o.l}</Button>)}</div>;
 }
 
 function SettingsPage() {
@@ -67,6 +67,14 @@ function SettingsPage() {
     if (error) return void toast.error(error.message);
     setPlaceName(""); qc.invalidateQueries({ queryKey: ["saved-locations"] });
   };
+  const exportData = async () => {
+    try {
+      const tables = ["profiles", "emergency_contacts", "saved_locations", "sos_events", "community_reports", "report_verifications"] as const;
+      const rows = await Promise.all(tables.map(async table => { const {data,error}=await supabase.from(table).select("*"); if(error) throw error; return [table,data]; }));
+      const url=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),data:Object.fromEntries(rows)},null,2)],{type:"application/json"}));
+      const a=document.createElement("a");a.href=url;a.download="FOX-private-data.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+    } catch { toast.error("Could not export your data"); }
+  };
   const signOut = async () => { await supabase.auth.signOut(); nav({ to: "/auth" }); };
   const doDelete = async () => {
     setBusy(true);
@@ -77,15 +85,15 @@ function SettingsPage() {
   return (
     <div className="space-y-4">
       <Panel title="Theme" icon={<Palette className="h-4 w-4 text-primary" />}>
-        <Chips value={s.theme} onChange={(v) => set("theme", v)} options={[{ v: "abyss", l: "Dark blue" }, { v: "light", l: "Light" }, { v: "blossom", l: "Pink & white" }]} />
+        <Chips value={s.theme} onChange={(v) => set("theme", v)} options={[{ v: "abyss", l: "Dark blue" }, { v: "light", l: "Light" }, { v: "blossom", l: "Pink & white" }, { v: "system", l: "System" }]} />
       </Panel>
       <Panel title="Language" icon={<Languages className="h-4 w-4 text-cyan" />}>
         <Chips value={s.language} onChange={(v) => set("language", v)} options={[{ v: "en", l: "English" }, { v: "hi", l: "हिन्दी" }, { v: "mr", l: "मराठी" }]} />
-        <p className="mt-2 text-[11px] text-muted-foreground">FOX listens and speaks in the chosen language.</p>
+        <p className="mt-2 text-[11px] text-muted-foreground">English, Hindi and Marathi are available for navigation and FOX voice. Some agency descriptions and page content remain in English; other languages are not yet translated.</p>
       </Panel>
       <Panel title="Accessibility" icon={<Accessibility className="h-4 w-4 text-primary" />}>
         <div className="py-2 text-sm">Text size <span className="font-mono text-xs text-muted-foreground">{Math.round(s.fontScale * 100)}%</span>
-          <Slider className="mt-2" min={0.85} max={1.5} step={0.05} value={[s.fontScale]} onValueChange={([v]) => set("fontScale", v!)} />
+          <Slider className="mt-2" min={0.85} max={1.5} step={0.05} value={[s.fontScale]} onValueChange={([v]) => v !== undefined && set("fontScale", v)} />
         </div>
         <Row label="High contrast" k="highContrast" />
         <Row label="Reduce motion" k="reduceMotion" />
@@ -129,7 +137,8 @@ function SettingsPage() {
       </Panel>
       <Panel title="About, privacy & help" icon={<Info className="h-4 w-4 text-muted-foreground" />}>
         <details className="py-1 text-sm"><summary className="cursor-pointer">About FOX</summary><p className="mt-1 text-xs text-muted-foreground">FOX turns live NASA (EONET, POWER, FIRMS), USGS, Open-Meteo and OpenStreetMap data into area-specific hazard alerts. Predictions are rule-based on published agency thresholds and always show their sources.</p></details>
-        <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><Shield className="inline h-3 w-3" /> Data & privacy</summary><p className="mt-1 text-xs text-muted-foreground">Your contacts, saved places, SOS history and reports are visible only to you. Location is read only when you allow it and is sent only in SOS messages you trigger. Settings and offline maps stay on this device.</p></details>
+        <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><Shield className="inline h-3 w-3" /> Data & privacy</summary><p className="mt-1 text-xs text-muted-foreground">Your contacts, saved places, SOS history and reports are visible only to you. Location is read only when you allow it. SOS shares your activation location with your saved contacts through Twilio; this is not continuous live tracking. Selected coordinates are also sent to weather, NASA and mapping services for area assessments. Settings and offline maps stay on this device.</p></details>
+        <Button variant="outline" size="sm" className="my-2 gap-2" onClick={exportData}><Download className="h-3 w-3"/>Export my private data</Button>
         <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><HelpCircle className="inline h-3 w-3" /> Help</summary><p className="mt-1 text-xs text-muted-foreground">Tap any place on the map for its prediction. Hold the SOS button 1.5 s or say “Hey FOX, help me”. In India dial 112 for emergencies.</p></details>
       </Panel>
       <Panel>

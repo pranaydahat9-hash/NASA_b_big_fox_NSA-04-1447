@@ -5,6 +5,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SettingsProvider } from "@/lib/settings";
 import { Toaster } from "@/components/ui/sonner";
+import { FoxAgent } from "@/components/fox/FoxAgent";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -91,6 +92,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
         <Outlet />
+        <FoxAgent />
         <Toaster position="top-center" richColors />
       </SettingsProvider>
     </QueryClientProvider>

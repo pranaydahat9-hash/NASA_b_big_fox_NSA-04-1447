@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
     lon: Number.isFinite(Number(s["lon"])) && s["lon"] != null ? Number(s["lon"]) : undefined,
     name: typeof s["name"] === "string" ? s["name"] : undefined,
   }),
-  head: () => ({ meta: [{ title: "Reports & accuracy — FOX" }, { name: "description", content: "Download PDF disaster reports with NASA data, check last week's prediction accuracy and share community reports." }, { property: "og:title", content: "Reports & accuracy — FOX" }, { property: "og:description", content: "PDF disaster reports, prediction accuracy and community reports." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Reports & accuracy — FOX" }, { name: "description", content: "Download PDF disaster reports with NASA data, check last week's prediction accuracy and share community reports." }, { property: "og:title", content: "Reports & accuracy — FOX" }, { property: "og:description", content: "PDF disaster reports, prediction accuracy and community reports." }] }),
   component: Reports,
 });
 
@@ -41,6 +41,7 @@ function Reports() {
   const [preview, setPreview] = useState<string | null>(null);
   const week = useQuery({ queryKey: ["past-week"], queryFn: () => weekFn(), staleTime: 30 * 60e3 });
   const mine = useQuery({ queryKey: ["my-reports"], queryFn: async () => (await supabase.from("community_reports").select("*").order("created_at", { ascending: false }).limit(20)).data ?? [] });
+  const votes = useQuery({ queryKey: ["report-verifications"], queryFn: async () => { const {data,error}=await supabase.from("report_verifications").select("*"); if(error) throw error; return data; } });
   const [rep, setRep] = useState({ hazard: "flood", description: "" });
 
   const refresh = () => listReports().then(setSaved).catch(() => {});
@@ -74,6 +75,12 @@ function Reports() {
     const { error } = await supabase.from("community_reports").insert({ hazard: rep.hazard, description: rep.description.trim().slice(0, 500), lat: loc.lat, lon: loc.lon });
     if (error) return void toast.error(error.message);
     haptic("success"); setRep({ ...rep, description: "" }); qc.invalidateQueries({ queryKey: ["my-reports"] }); toast.success("Report submitted");
+  }
+
+  async function verify(id: string, vote: number) {
+    const {error}=await supabase.from("report_verifications").upsert({report_id:id,vote});
+    if(error) return void toast.error("Could not save your observation: " + error.message);
+    qc.invalidateQueries({queryKey:["report-verifications"]});
   }
 
   return (
@@ -130,7 +137,8 @@ function Reports() {
         <div className="flex flex-wrap gap-1.5">{HAZ.map((h) => <button key={h} onClick={() => setRep({ ...rep, hazard: h })} className={cn("rounded-full border px-2.5 py-1 text-[11px] capitalize transition active:scale-95", rep.hazard === h ? "border-primary bg-primary/15 text-primary" : "bg-surface/60")}>{h.replace("_", " ")}</button>)}</div>
         <Textarea className="mt-2" placeholder="e.g. Water knee-deep on the main road near the station" value={rep.description} maxLength={500} onChange={(e) => setRep({ ...rep, description: e.target.value })} />
         <Button className="mt-2 w-full" onClick={submitReport}>Submit with my location</Button>
-        {(mine.data ?? []).length > 0 && <ul className="mt-3 space-y-1 text-xs">{mine.data!.map((r) => <li key={r.id} className="rounded-lg border bg-surface/60 p-2"><span className="font-medium capitalize">{r.hazard.replace("_", " ")}</span> · {r.description} <span className="text-muted-foreground">· {ago(r.created_at)}</span></li>)}</ul>}
+        <p className="mt-2 text-[11px] text-muted-foreground">Your incident reports are private. Observation confirmations are yours, not independent agency verification.</p>
+        {(mine.data ?? []).length > 0 && <ul className="mt-3 space-y-2 text-xs">{(mine.data ?? []).map(r => { const vote=votes.data?.find(v=>v.report_id===r.id)?.vote; return <li key={r.id} className="rounded-lg border bg-surface/60 p-2"><span className="font-medium capitalize">{r.hazard.replace("_"," ")}</span> · {r.description} <span className="text-muted-foreground">· {ago(r.created_at)}</span><p className="mt-1">{vote===1 ? "Confirmed by you" : vote===-1 ? "Disputed by you" : "Unverified observation"}</p><div className="mt-2 flex flex-wrap gap-2"><Button size="sm" variant="outline" onClick={()=>verify(r.id,1)}><CheckCircle2 className="h-3 w-3"/>Confirm observation</Button><Button size="sm" variant="outline" onClick={()=>verify(r.id,-1)}><XCircle className="h-3 w-3"/>Dispute</Button></div></li>; })}</ul>}
       </Panel>
     </div>
   );

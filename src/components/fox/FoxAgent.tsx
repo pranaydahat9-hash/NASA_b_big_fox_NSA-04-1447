@@ -13,8 +13,10 @@ import { getLastLocation } from "@/lib/location";
 import { FoxMark } from "@/components/app/FoxMark";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { isEmergencyCommand, isFoxPage, parseLocalCommand, settingValue } from "@/lib/fox-commands";
 
-const EMERGENCY = /\b(help|sos|emergency|save me)\b|bachao|madad|मदद|बचाओ|मदत|वाचवा/i;
+
 const WAKE = /\b(hey|hi|ok)?\s*fox\b|फॉक्स/i;
 
 function speak(text: string, lang: string) {
@@ -56,11 +58,12 @@ export function FoxAgent() {
   async function runAction(a: FoxAction): Promise<string> {
     const g = a.args as any;
     switch (a.name) {
-      case "navigate": nav({ to: `/${g.page}` as any }); return `Opened ${g.page}`;
+      case "navigate": { if (!isFoxPage(g.page)) throw new Error("Unknown page"); await nav({ to: `/${g.page}` }); return `Opened ${g.page}`; }
       case "set_setting": {
-        const k = g.key as keyof Settings; let v: any = g.value;
-        if (v === "true" || v === "false") v = v === "true"; else if (k === "fontScale") v = Math.max(0.85, Math.min(1.5, Number(v)));
-        set(k, v); return `Set ${k} → ${g.value}`;
+        const values = settingValue(String(g.key), g.value);
+        if (!values) throw new Error("Unsupported setting value");
+        for (const [key, value] of Object.entries(values)) set(key as keyof Settings, value);
+        return `Set ${g.key} → ${g.value}`;
       }
       case "search_map": nav({ to: "/map", search: { q: g.query } }); return `Searching map: ${g.query}`;
       case "open_saved_location": {
@@ -72,11 +75,13 @@ export function FoxAgent() {
       case "trigger_sos": {
         const r = await trigger("fox", g.reason);
         nav({ to: "/sos" });
-        const sent = r.deliveries.filter((d) => d.status === "sent" || d.status === "queued").length;
-        return `SOS: ${sent}/${r.contactCount} delivered${r.contactCount ? "" : " (no contacts saved)"}`;
+        const delivered = r.deliveries.filter((d) => d.status === "delivered").length;
+        const pending = r.deliveries.filter((d) => ["sent", "queued", "accepted", "sending"].includes(d.status)).length;
+        return `SOS: ${delivered}/${r.contactCount} confirmed delivered; ${pending} awaiting confirmation. ${r.deliveries.some((d) => d.status === "not_configured" || d.status === "failed") ? "Automatic sending unavailable; use manual SMS or Call 112." : r.contactCount ? "" : "No contacts saved — use Call 112."}`;
       }
       case "add_contact": {
-        const { error } = await supabase.from("emergency_contacts").insert({ name: g.name, phone: g.phone, relation: g.relation ?? null });
+        if (!String(g.name ?? "").trim() || !/^\+[1-9]\d{6,14}$/.test(String(g.phone ?? "").replace(/[ ()-]/g, ""))) throw new Error("Use a name and phone number with international country code");
+        const { error } = await supabase.from("emergency_contacts").insert({ name: g.name, phone: String(g.phone).replace(/[ ()-]/g, ""), relation: g.relation ?? null });
         emitFox("contacts-changed", null);
         return error ? `Could not add contact: ${error.message}` : `Added contact ${g.name}`;
       }
@@ -86,28 +91,33 @@ export function FoxAgent() {
   }
 
   async function send(text: string) {
-    const q = text.trim(); if (!q) return;
+    const q = text.trim(); if (!q || busy) return;
+    const { data: session } = await supabase.auth.getSession();
+    if (!session.session) { setMsgs(m=>[...m,{role:"assistant",content:"Sign in to use FOX actions and your saved contacts. For an immediate emergency, call 112."}]); return; }
     setInput("");
     const next = [...msgs, { role: "user" as const, content: q }];
     setMsgs(next);
     // Local emergency fast-path: no AI round trip before SOS goes out.
-    if (EMERGENCY.test(q)) {
+    if (isEmergencyCommand(q)) {
       const line = s.language === "hi" ? "आपातकालीन SOS भेज रहा हूँ, आपका लाइव लोकेशन भी।" : s.language === "mr" ? "आपत्कालीन SOS पाठवत आहे, तुमचे लाइव्ह लोकेशनसह." : "Sending SOS with your live location to your emergency contacts now.";
-      say(line);
+      setBusy(true); say(line);
       setMsgs((m) => [...m, { role: "assistant", content: line }]);
       try { const res = await runAction({ name: "trigger_sos", args: { reason: q } }); setMsgs((m) => [...m, { role: "assistant", content: res, actions: ["trigger_sos"] }]); say(res); }
-      catch (e) { toast.error((e as Error).message); }
+      catch (e) { await nav({ to: "/sos" }); const message = "SOS could not be sent. Use manual SMS or Call 112."; setMsgs((m) => [...m, { role: "assistant", content: message }]); say(message); toast.error((e as Error).message); }
+      finally { setBusy(false); }
       return;
     }
     setBusy(true);
     try {
+      const local = parseLocalCommand(q);
+      if (local) { const result = await runAction(local); setMsgs((m) => [...m, { role: "assistant", content: result }]); say(result); return; }
       const l = getLastLocation();
       const context = `Current page: ${loc.pathname}${loc.searchStr}\nSettings: ${JSON.stringify(s)}\nLast known location: ${l ? `${l.lat.toFixed(4)},${l.lon.toFixed(4)} at ${l.at}` : "unknown"}\n\n${getFoxContext()}`;
       const r = await ask({ data: { messages: next.map(({ role, content }) => ({ role, content })), context, language: s.language } });
-      if (r.error) { setMsgs((m) => [...m, { role: "assistant", content: r.error! }]); say(r.error); return; }
+      if (r.error) { const error = r.error; setMsgs((m) => [...m, { role: "assistant", content: error }]); say(error); return; }
       const results: string[] = [];
       for (const a of r.actions) results.push(await runAction(a));
-      const reply = r.reply || results.join(". ") || "Done.";
+      const reply = results.length ? results.join(". ") : r.reply || "No action was performed.";
       setMsgs((m) => [...m, { role: "assistant", content: reply, actions: results }]);
       say(reply);
     } catch (e) {
@@ -120,7 +130,7 @@ export function FoxAgent() {
   function listenOnce() {
     if (!SR) { toast.error("Voice input isn't supported in this browser — try Chrome, or type instead."); return; }
     if (listening) { recRef.current?.stop(); return; }
-    speechSynthesis?.cancel();
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
     const r = new SR(); r.lang = lang; r.interimResults = true; r.maxAlternatives = 1;
     let final = "";
     r.onresult = (e: any) => { let tx = ""; for (const res of e.results) tx += res[0].transcript; setInput(tx); if (e.results[e.results.length - 1].isFinal) final = tx; };
@@ -138,11 +148,11 @@ export function FoxAgent() {
       const r = new SR(); r.lang = lang; r.continuous = true; r.interimResults = false;
       r.onresult = (e: any) => {
         const tx = e.results[e.results.length - 1][0].transcript as string;
-        if (EMERGENCY.test(tx) && WAKE.test(tx)) { setOpen(true); send(tx); }
+        if (isEmergencyCommand(tx) && WAKE.test(tx)) { setOpen(true); send(tx); }
         else if (WAKE.test(tx)) { const cmd = tx.replace(WAKE, "").trim(); setOpen(true); if (cmd.length > 2) send(cmd); else say("Yes?"); }
       };
       r.onend = () => setTimeout(start, 400);
-      r.onerror = () => {};
+      r.onerror = (e: { error: string }) => { if (["not-allowed", "service-not-allowed", "audio-capture"].includes(e.error)) { alive = false; set("handsFree", false); toast.error("Microphone unavailable — hands-free mode stopped. Text commands still work."); } };
       handsRef.current = r; try { r.start(); } catch {}
     };
     start();
@@ -154,24 +164,24 @@ export function FoxAgent() {
 
   return (
     <>
-      <button aria-label="Open FOX assistant" onClick={() => setOpen(true)} className="haptic fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-neon glow sm:right-[max(1rem,calc(50vw-23rem))]">
+      <Button aria-label="Open FOX assistant" onClick={() => setOpen(true)} className="haptic fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-neon glow sm:right-[max(1rem,calc(50vw-23rem))]">
         <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping-slow" />
         <FoxMark className="relative h-8 w-8 rounded-full" />
         {s.handsFree && <Ear className="absolute -left-1 -top-1 h-4 w-4 rounded-full bg-background p-0.5 text-cyan" />}
-      </button>
+      </Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/60 backdrop-blur-sm sm:items-center" onClick={() => setOpen(false)}>
-          <div className="glass flex h-[78vh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl animate-float-up" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-label="FOX assistant" className="glass flex h-[78dvh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl animate-float-up" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 border-b px-4 py-3">
               <div className="relative"><FoxMark className="h-9 w-9" />{(busy || speaking) && <span className="absolute inset-0 rounded-full ring-2 ring-primary animate-ping-slow" />}</div>
-              <div className="flex-1"><div className="font-display font-bold">FOX</div><div className="text-[10px] text-muted-foreground">{busy ? "thinking…" : speaking ? "speaking…" : listening ? "listening…" : "voice + text agent · controls the whole app"}</div></div>
+              <div className="min-w-0 flex-1"><div className="font-display font-bold">FOX</div><div className="text-[10px] text-muted-foreground">{busy ? "thinking…" : speaking ? "speaking…" : listening ? "listening…" : "Ready"}</div></div>
               <button onClick={() => set("handsFree", !s.handsFree)} className={cn("haptic rounded-full border px-2 py-1 text-[10px]", s.handsFree ? "border-cyan text-cyan" : "text-muted-foreground")}>“Hey FOX” {s.handsFree ? "on" : "off"}</button>
               <button aria-label="Close" onClick={() => setOpen(false)} className="haptic rounded-full p-1.5 hover:bg-accent"><X className="h-4 w-4" /></button>
             </div>
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
               {msgs.length === 0 && (
                 <div className="space-y-3 text-sm text-muted-foreground">
-                  <p>{t("askFox", s.language)}. I can open pages, search the map, change settings, explain graphs, show safe zones and send SOS.</p>
+                  <p>{t("askFox", s.language)}</p>
                   <div className="flex flex-wrap gap-2">{suggestions.map((x) => <button key={x} onClick={() => send(x)} className="haptic rounded-full border bg-surface px-3 py-1.5 text-xs text-foreground hover:border-primary">{x}</button>)}</div>
                 </div>
               )}
@@ -188,7 +198,7 @@ export function FoxAgent() {
               <button type="button" onClick={listenOnce} aria-label="Speak" className={cn("haptic grid h-11 w-11 shrink-0 place-items-center rounded-full border", listening ? "bg-high text-destructive-foreground animate-pulse" : "bg-surface")}>
                 {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </button>
-              <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("askFox", s.language)} className="h-11 flex-1 rounded-full border bg-surface px-4 text-sm outline-none focus:border-primary" />
+              <input aria-label="Message FOX" value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("askFox", s.language)} className="h-11 min-w-0 flex-1 rounded-full border bg-surface px-4 text-sm outline-none focus:border-primary" />
               <button aria-label="Send" disabled={busy} className="haptic grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-neon text-primary-foreground disabled:opacity-50"><Send className="h-4 w-4" /></button>
             </form>
           </div>

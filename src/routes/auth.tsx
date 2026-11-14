@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { FoxMark } from "@/components/app/FoxMark";
 
 export const Route = createFileRoute("/auth")({
-  head: () => ({ meta: [
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
     { title: "Sign in — FOX Disaster Watch" }, { name: "description", content: "Sign in to FOX to save emergency contacts, places and reports." },
     { property: "og:title", content: "Sign in — FOX Disaster Watch" }, { property: "og:description", content: "Sign in to FOX to save emergency contacts, places and reports." },
   ] }),

@@ -15,6 +15,7 @@ import { saveReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
 import { HAZ_NAME, HazardGlyph, LevelBadge, SourceList, Stat, ago, levelText } from "@/components/app/bits";
 import { Button } from "@/components/ui/button";
+import { FireGraph } from "@/components/app/FireGraph";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/_authenticated/map")({
     lon: s["lon"] != null && Number.isFinite(Number(s["lon"])) ? Number(s["lon"]) : undefined,
     safe: s["safe"] ? 1 : undefined,
   }),
-  head: () => ({ meta: [{ title: "Live hazard map — FOX" }, { name: "description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }, { property: "og:title", content: "Live hazard map — FOX" }, { property: "og:description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Live hazard map — FOX" }, { name: "description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }, { property: "og:title", content: "Live hazard map — FOX" }, { property: "og:description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }] }),
   component: MapPage,
 });
 
@@ -165,7 +166,7 @@ function MapPage() {
     setDl({ done: 0, total: 1 });
     try {
       const n = await downloadArea(style, point.lat, point.lon, 4, (done, total) => setDl({ done, total }));
-      saveArea({ id: `${point.lat.toFixed(3)},${point.lon.toFixed(3)}`, name: point.name ?? "Area", lat: point.lat, lon: point.lon, radiusKm: 4, tiles: n, savedAt: new Date().toISOString(), zones: rankedSafe.slice(0, 30) });
+      saveArea({ id: `${point.lat.toFixed(3)},${point.lon.toFixed(3)}`, name: point.name ?? "Area", lat: point.lat, lon: point.lon, radiusKm: 4, tiles: n, style, savedAt: new Date().toISOString(), zones: rankedSafe.slice(0, 30) });
       if (assess.data) {
         const blob = await buildReportPdf(assess.data, point.name ?? "Selected area", rankedSafe);
         await saveReport({ id: crypto.randomUUID(), title: `Safe-zone map · ${point.name ?? ""}`, place: point.name ?? "", createdAt: new Date().toISOString(), level: assess.data.overall, blob });
@@ -209,6 +210,7 @@ function MapPage() {
         </div>
       </div>
 
+      {a && <FireGraph assessment={a} />}
       {point && (
         <div className="glass rounded-2xl p-4 animate-float-up">
           <div className="flex items-start justify-between gap-2">

@@ -2,7 +2,6 @@ import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LayoutDashboard, Map, Siren, ShieldCheck, FileText, Settings as Cog } from "lucide-react";
 import { FoxMark } from "./FoxMark";
-import { FoxAgent } from "@/components/fox/FoxAgent";
 import { AlertCenter } from "./AlertCenter";
 import { useSettings } from "@/lib/settings";
 import { t, type Key } from "@/lib/i18n";
@@ -46,7 +45,6 @@ export function AppShell() {
         <Outlet />
       </main>
       <AlertCenter />
-      <FoxAgent />
       <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-3xl px-3 pb-[max(env(safe-area-inset-bottom),10px)]">
         <div className="glass grid grid-cols-6 rounded-2xl p-1">
           {NAV.map(({ to, key, icon: Icon }) => {

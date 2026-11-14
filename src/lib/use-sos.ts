@@ -13,11 +13,11 @@ export function useSos() {
   const [busy, setBusy] = useState(false);
   const trigger = useCallback(async (trig: string, note?: string) => {
     setBusy(true); haptic("heavy");
-    let lat: number | null = null, lon: number | null = null, acc: number | null = null, locError: string | undefined;
-    try { const l = await requestLocation(10000); lat = l.lat; lon = l.lon; acc = l.accuracy; }
-    catch (e) { locError = (e as Error).message; const l = getLastLocation(); if (l) { lat = l.lat; lon = l.lon; acc = l.accuracy; locError += " — used last known location"; } }
+    let lat: number | null = null, lon: number | null = null, acc: number | null = null, locError: string | undefined, locationAt: string | undefined, stale = false;
+    try { const l = await requestLocation(10000); lat = l.lat; lon = l.lon; acc = l.accuracy; locationAt = l.at; }
+    catch (e) { locError = (e as Error).message; const l = getLastLocation(); if (l) { lat = l.lat; lon = l.lon; acc = l.accuracy; locationAt = l.at; stale = true; locError += " — used last known location"; } }
     try {
-      const r = await fn({ data: { lat, lon, accuracy: acc, trigger: trig, ...(note !== undefined ? { note } : {}) } });
+      const r = await fn({ data: { lat, lon, accuracy: acc, trigger: trig, ...(locationAt ? { locationAt } : {}), stale, ...(note !== undefined ? { note } : {}) } });
       const res: SosResult = { ...r, lat, lon, at: new Date().toISOString(), locError };
       last = res;
       subs.forEach((s) => s(last)); haptic("success");
