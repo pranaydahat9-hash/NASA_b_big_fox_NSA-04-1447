@@ -33,7 +33,7 @@ export function AppShell() {
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-background/70 px-4 py-2.5 backdrop-blur-xl">
         <Link to="/dashboard" className="flex items-center gap-2">
           <FoxMark className="h-8 w-8" />
-          <div className="leading-none"><div className="font-display text-lg font-bold tracking-wide">FOX</div><div className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">sat·disaster·watch</div></div>
+          <div className="leading-tight"><div className="font-display text-lg font-extrabold tracking-tight">FOX</div><div className="text-[10px] font-medium text-muted-foreground">Stay aware. Stay safe.</div></div>
         </Link>
         <div className="flex items-center gap-2 font-mono text-[10px]">
           <span className={cn("flex items-center gap-1 rounded-full border px-2 py-0.5", online ? "text-low" : "text-med")}>
@@ -53,7 +53,7 @@ export function AppShell() {
             const active = loc.pathname.startsWith(to);
             return (
               <Link key={to} to={to} className={cn("haptic group relative flex flex-col items-center gap-0.5 rounded-xl py-1.5 text-[10px] font-semibold", active ? "text-primary" : "text-muted-foreground")}>
-                {active && <span className="absolute inset-0 rounded-xl bg-primary/10 glow" />}
+                {active && <span className="absolute inset-0 rounded-xl bg-primary/10" />}{active && <span className="absolute -top-1 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-primary" />}
                 <span className="relative">
                   <Icon className={cn("h-4 w-4 transition-transform group-hover:-translate-y-0.5", key === "sos" && "text-high animate-flicker")} strokeWidth={2.4} />
                   {key === "sos" && <span className="absolute -right-1 -top-1 h-1.5 w-1.5 rounded-full bg-high animate-ping-slow" />}

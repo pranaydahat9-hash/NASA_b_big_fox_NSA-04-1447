@@ -5,13 +5,13 @@ export type Settings = {
   theme: "abyss" | "light" | "blossom"; language: Lang; fontScale: number; reduceMotion: boolean; highContrast: boolean;
   voiceReplies: boolean; alarmSound: boolean; clicks: boolean; notifyLow: boolean; notifyMedium: boolean; notifyHigh: boolean; handsFree: boolean;
 };
-const DEFAULTS: Settings = { theme: "abyss", language: "en", fontScale: 1, reduceMotion: false, highContrast: false, voiceReplies: true, alarmSound: true, clicks: true, notifyLow: true, notifyMedium: true, notifyHigh: true, handsFree: false };
+const DEFAULTS: Settings = { theme: "blossom", language: "en", fontScale: 1, reduceMotion: false, highContrast: false, voiceReplies: true, alarmSound: true, clicks: true, notifyLow: true, notifyMedium: true, notifyHigh: true, handsFree: false };
 const Ctx = createContext<{ s: Settings; set: <K extends keyof Settings>(k: K, v: Settings[K]) => void }>({ s: DEFAULTS, set: () => {} });
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [s, setS] = useState<Settings>(DEFAULTS);
   useEffect(() => {
-    try { setS({ ...DEFAULTS, ...JSON.parse(localStorage.getItem("fox.settings") || "{}") }); } catch {}
+    try { const saved = JSON.parse(localStorage.getItem("fox.settings") || "{}"); if (!localStorage.getItem("fox.theme.v2")) { saved.theme = "blossom"; localStorage.setItem("fox.theme.v2", "1"); localStorage.setItem("fox.settings", JSON.stringify(saved)); } setS({ ...DEFAULTS, ...saved }); } catch {}
   }, []);
   useEffect(() => {
     const h = document.documentElement;

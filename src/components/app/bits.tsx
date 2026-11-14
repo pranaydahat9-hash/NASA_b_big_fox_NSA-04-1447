@@ -14,7 +14,7 @@ export const levelBorder: Record<Level, string> = { low: "border-low/50", medium
 export function LevelBadge({ level, className }: { level: Level; className?: string }) {
   const { s } = useSettings();
   return (
-    <span className={cn("inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider", levelBorder[level], levelText[level], className)}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold capitalize", level === "high" ? "tint-high" : level === "medium" ? "tint-med" : "tint-low", levelText[level], className)}>
       <span className="relative flex h-1.5 w-1.5"><span className={cn("absolute inset-0 rounded-full animate-ping-slow", levelBg[level])} /><span className={cn("relative h-1.5 w-1.5 rounded-full", levelBg[level])} /></span>
       {t(level, s.language)}
     </span>
@@ -26,8 +26,8 @@ export function HazardGlyph({ type, level, size = "sm" }: { type: HazardType; le
   const Icon = HAZ_ICON[type];
   const box = size === "sm" ? "h-8 w-8" : "h-11 w-11";
   return (
-    <span className={cn("relative grid shrink-0 place-items-center rounded-xl border bg-surface", box, levelBorder[level])}>
-      {level !== "low" && <span className={cn("absolute inset-0 rounded-xl opacity-40 animate-ping-slow", levelBg[level])} />}
+    <span className={cn("relative grid shrink-0 place-items-center rounded-full", box, level === "high" ? "tint-high" : level === "medium" ? "tint-med" : "tint-low")}>
+      {level !== "low" && <span className={cn("absolute inset-0 rounded-full opacity-30 animate-ping-slow", levelBg[level])} />}
       <Icon className={cn(size === "sm" ? "h-3.5 w-3.5" : "h-5 w-5", levelText[level], level === "high" && "animate-jitter", level === "medium" && "animate-flicker")} strokeWidth={2.4} />
     </span>
   );
@@ -35,10 +35,10 @@ export function HazardGlyph({ type, level, size = "sm" }: { type: HazardType; le
 
 export function Panel({ title, icon, right, children, className }: { title?: ReactNode; icon?: ReactNode; right?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("glass rounded-2xl p-4 animate-float-up", className)}>
+    <section className={cn("glass rounded-[1.4rem] p-4 sm:p-5 animate-float-up", className)}>
       {title && (
         <header className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider">{icon}{title}</h2>
+          <h2 className="flex items-center gap-2 text-[15px] font-bold tracking-tight">{icon && <span className="grid h-7 w-7 place-items-center rounded-full bg-primary/10">{icon}</span>}{title}</h2>
           {right}
         </header>
       )}
