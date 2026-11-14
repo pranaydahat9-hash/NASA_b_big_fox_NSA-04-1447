@@ -73,7 +73,7 @@ export function SourceList({ readings }: { readings: Reading[] }) {
   );
 }
 
-export function Stat({ label, value, unit, accent }: { label: string; value: ReactNode; unit?: string; accent?: string }) {
+export function Stat({ label, value, unit, accent }: { label: string; value: ReactNode; unit?: string; accent?: string | undefined }) {
   return (
     <div className="rounded-xl border bg-surface/60 p-2.5">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
