@@ -9,6 +9,7 @@ import { deleteAccount } from "@/lib/sos.functions";
 import { useSettings, type Settings } from "@/lib/settings";
 import { useHere } from "@/components/app/Here";
 import { Panel } from "@/components/app/bits";
+import { DrillControls } from '@/components/app/DrillControls';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -108,10 +109,11 @@ function SettingsPage() {
         <Row label="2-minute alarm sound" k="alarmSound" />
         <p className="mt-2 text-xs font-semibold">Test the alerts (drill)</p>
         <div className="mt-1 grid grid-cols-3 gap-2">
-          <Button size="sm" variant="outline" className="border-low/60 text-low" onClick={() => toast("🟢 Low alert (news): Glacier melt above normal in your region — months of lead time. Plan ahead.")}>Low</Button>
+          <Button size="sm" variant="outline" className="border-low/60 text-low" onClick={() => toast("DRILL — low (green) notice. This is a simulated preparedness message, not a glacier observation.")}>Low</Button>
           <Button size="sm" variant="outline" className="border-med/60 text-med" onClick={() => emitFox("drill", "medium")}>Medium</Button>
           <Button size="sm" variant="outline" className="border-high/60 text-high" onClick={() => emitFox("drill", "high")}>High</Button>
         </div>
+        <div className="mt-3"><DrillControls /></div>
         <Link to="/sos" className="mt-2 inline-block text-xs text-primary underline">Manage emergency contacts →</Link>
       </Panel>
       <Panel title="Account" icon={<User className="h-4 w-4 text-cyan" />}>

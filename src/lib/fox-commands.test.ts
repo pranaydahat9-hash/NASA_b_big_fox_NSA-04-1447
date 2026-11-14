@@ -8,4 +8,7 @@ describe('FOX commands', () => {
  it('switches to Marathi', () => expect(parseLocalCommand('Switch to Marathi')?.args).toEqual({key:'language',value:'mr'}));
  it('rejects invalid font values', () => expect(settingValue('fontScale','invalid')).toBeNull());
  it('rejects unknown settings', () => expect(settingValue('admin',true)).toBeNull());
+ it('runs red-alert practice without SOS', () => expect(parseLocalCommand('Run red alert drill')).toEqual({ name: 'run_drill', args: { tier: 'high' } }));
+ it('opens emergency contacts without sending SOS', () => expect(parseLocalCommand('Open emergency contacts')).toEqual({ name: 'navigate', args: { page: 'sos' } }));
+ it('does not treat drill messages as emergencies', () => expect(isEmergencyCommand('Send a drill SOS')).toBe(false));
 });

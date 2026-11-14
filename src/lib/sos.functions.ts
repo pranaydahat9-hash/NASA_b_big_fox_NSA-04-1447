@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { emergencyMessageOpening } from './emergency-policy';
 
 type SosInput = { lat: number | null; lon: number | null; accuracy: number | null; trigger: string; note?: string; locationAt?: string; stale?: boolean };
 
@@ -22,7 +23,7 @@ export const sendSos = createServerFn({ method: "POST" })
     const contacts = contactsResult.data, profile = profileResult.data;
     const who = profile?.display_name ?? "A FOX user";
     const loc = data.lat != null && data.lon != null ? `https://maps.google.com/?q=${data.lat.toFixed(6)},${data.lon.toFixed(6)} (±${Math.round(data.accuracy ?? 0)} m)` : "location unavailable";
-    const message = `SOS from ${who}: I need help. ${data.stale ? "Last known location" : "Location at activation"}: ${loc}${data.locationAt ? ` (observed ${data.locationAt})` : ""}. ${data.note ? data.note + " " : ""}Sent via FOX at ${new Date().toUTCString()}`;
+    const message = `${emergencyMessageOpening(who, data.trigger === 'drill')} ${data.stale ? "Last known location" : "Location at activation"}: ${loc}${data.locationAt ? ` (observed ${data.locationAt})` : ""}. ${data.trigger !== 'drill' && data.note ? data.note + " " : ""}Sent via FOX at ${new Date().toUTCString()}`;
     const { sendSms } = await import("./sms.server");
     const deliveries = (contacts ?? []).length ? await sendSms(contacts ?? [], message) : [];
     const { data: ev, error: saveError } = await supabase.from("sos_events").insert({ user_id: userId, lat: data.lat, lon: data.lon, accuracy_m: data.accuracy, message, trigger: data.trigger, deliveries }).select("id, created_at").single();

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Siren, Phone, MessageSquare, Trash2, UserPlus, Loader2, CheckCircle2, XCircle, Clock, MapPin, Users } from "lucide-react";
+import { Siren, Phone, MessageSquare, Trash2, UserPlus, Loader2, CheckCircle2, XCircle, Clock, MapPin, Users, Ambulance, Shield, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getSmsStatus, refreshSosDelivery } from "@/lib/sos.functions";
@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { EMERGENCY_SERVICES } from '@/lib/emergency-policy';
+import { DrillControls } from '@/components/app/DrillControls';
 
 export const Route = createFileRoute("/_authenticated/sos")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "SOS & family safety — FOX" }, { name: "description", content: "Send an SOS with your live location to your emergency contacts and manage family safety." }, { property: "og:title", content: "SOS & family safety — FOX" }, { property: "og:description", content: "Send an SOS with your live location to your emergency contacts." }] }),
@@ -70,6 +72,14 @@ function SosPage() {
 
   return (
     <div className="space-y-4">
+      <Panel title="Emergency services · India" icon={<Phone className="h-4 w-4 text-high" />}>
+        <div className="grid grid-cols-3 gap-2">{EMERGENCY_SERVICES.map((service, i) => {
+          const Icon = [Ambulance, Shield, Flame][i] ?? Phone;
+          return <Button asChild key={service.name} variant="outline" className="h-auto flex-col gap-1 px-1 py-3 text-xs"><a href={`tel:${service.number}`}><Icon className="h-5 w-5 text-high" />{service.name}<span className="text-muted-foreground">{service.number}</span></a></Button>;
+        })}</div>
+        <p className="mt-2 text-[11px] text-muted-foreground">112 is India’s unified emergency dispatch for medical, police and fire assistance. Outside India, use your local emergency number.</p>
+        <Button asChild variant="outline" className="mt-2 w-full"><a href="#emergency-contacts"><Users className="h-4 w-4" />Emergency contacts</a></Button>
+      </Panel>
       <Panel>
         <div className="flex flex-col items-center py-4">
           <Button variant="danger"
@@ -113,7 +123,7 @@ function SosPage() {
         </div>
       </Panel>
 
-      <Panel title="Emergency contacts" icon={<Users className="h-4 w-4 text-cyan" />}>
+      <div id="emergency-contacts" className="scroll-mt-24"><Panel title="Emergency contacts" icon={<Users className="h-4 w-4 text-cyan" />}>
         <ul className="space-y-1.5">
           {(contacts.data ?? []).map((c) => (
             <li key={c.id} className="flex items-center gap-2 rounded-lg border bg-surface/60 p-2 text-sm">
@@ -132,7 +142,9 @@ function SosPage() {
           <label className="flex min-h-10 items-center justify-between rounded-md border px-3 text-xs">Family <Switch checked={form.is_family} onCheckedChange={(v) => setForm({ ...form, is_family: v })} /></label>
         </div>
         <Button className="mt-2 w-full gap-1.5" onClick={add}><UserPlus className="h-4 w-4" />Add contact</Button>
-      </Panel>
+      </Panel></div>
+
+      <Panel title="Red-alert practice" icon={<Siren className="h-4 w-4 text-high" />}><DrillControls /></Panel>
 
       <Panel title="SOS history" icon={<Clock className="h-4 w-4 text-muted-foreground" />}>
         {(history.data ?? []).length === 0 ? <p className="text-xs text-muted-foreground">No SOS sent yet.</p> : (

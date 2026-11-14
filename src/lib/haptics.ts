@@ -18,13 +18,14 @@ export function haptic(kind: "tap" | "heavy" | "success" | "warn" = "tap") {
 /** High-alert siren: ~2 minutes of buzzing + vibration until stopped. */
 export function startAlarm(durationMs = 120_000) {
   const a = ac();
+  void a.resume().catch(() => {});
   const o = a.createOscillator(); const g = a.createGain(); const lfo = a.createOscillator(); const lg = a.createGain();
   o.type = "sawtooth"; o.frequency.value = 760; lfo.frequency.value = 1.6; lg.gain.value = 260;
   lfo.connect(lg).connect(o.frequency); g.gain.value = 0.12; o.connect(g).connect(a.destination);
   o.start(); lfo.start();
-  const vib = setInterval(() => navigator.vibrate?.([600, 200]), 800);
+  const vib = setInterval(() => { try { navigator.vibrate?.([600, 200]); } catch {} }, 800);
   let stopped = false;
-  const stop = () => { if (stopped) return; stopped = true; clearInterval(vib); navigator.vibrate?.(0); try { o.stop(); lfo.stop(); } catch {} };
+  const stop = () => { if (stopped) return; stopped = true; clearInterval(vib); try { navigator.vibrate?.(0); o.stop(); lfo.stop(); } catch {} };
   setTimeout(stop, durationMs);
   return stop;
 }

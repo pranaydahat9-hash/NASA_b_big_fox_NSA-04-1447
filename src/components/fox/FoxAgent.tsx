@@ -58,6 +58,7 @@ export function FoxAgent() {
   async function runAction(a: FoxAction): Promise<string> {
     const g = a.args as any;
     switch (a.name) {
+      case "run_drill": { if (g.tier !== 'high') throw new Error('Unsupported drill'); emitFox('drill', 'high'); setOpen(false); return 'Red-alert practice started. No messages sent.'; }
       case "navigate": { if (!isFoxPage(g.page)) throw new Error("Unknown page"); await nav({ to: `/${g.page}` }); return `Opened ${g.page}`; }
       case "set_setting": {
         const values = settingValue(String(g.key), g.value);
@@ -116,7 +117,10 @@ export function FoxAgent() {
       const r = await ask({ data: { messages: next.map(({ role, content }) => ({ role, content })), context, language: s.language } });
       if (r.error) { const error = r.error; setMsgs((m) => [...m, { role: "assistant", content: error }]); say(error); return; }
       const results: string[] = [];
-      for (const a of r.actions) results.push(await runAction(a));
+      for (const a of r.actions) {
+        if (a.name === 'trigger_sos' && !isEmergencyCommand(q)) { results.push('No SOS sent. Open Direct SOS to activate it, or say “Hey FOX, help me” in an emergency.'); continue; }
+        results.push(await runAction(a));
+      }
       const reply = results.length ? results.join(". ") : r.reply || "No action was performed.";
       setMsgs((m) => [...m, { role: "assistant", content: reply, actions: results }]);
       say(reply);

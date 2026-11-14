@@ -35,3 +35,5 @@ use the editor.
 - Parse and validate FIRMS CSV headers before accepting fire data; unavailable satellite coverage must not be presented as zero detections.
 - Do not bulk-download standard OpenStreetMap tiles; only mark an area complete after every permitted tile is cached.
 - Keep incident confirmations private and explicitly distinguish owner observations from independent verification.
+- Drill contact messages use the SOS owner-scoped delivery history but must carry a server-generated DRILL prefix and never claim an actual emergency; practice alerts never automatically send SMS.
+- Fetch news from a fixed NASA feed server-side, validate source links, and display publication dates so news is not mistaken for a local emergency warning.

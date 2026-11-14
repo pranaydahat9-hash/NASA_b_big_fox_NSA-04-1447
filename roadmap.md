@@ -1,4 +1,10 @@
 # Existing-app upgrade
+## Emergency options, news and drills
+- [x] Add India emergency-service choices and direct SOS access.
+- [x] Run red-alert drills with an alarm and explicit optional contact-message confirmation.
+- [x] Show current NASA news with glacier filtering, dates and source links; no glacier stories in the current feed is labelled explicitly.
+- [x] Test drill safety and verify signed-in mobile/desktop choices, cancelled message confirmation, zero automatic drill sends, and FOX practice commands.
+
 - [x] Preserve existing screens and blue theme; add system mode and accessibility refinements.
 - [x] Validate FOX actions; local text commands navigate, search, open saved places and change settings; FOX available on every page.
 - [x] Connect Twilio, add owner-scoped delivery refresh and retain manual SOS fallback.

@@ -12,6 +12,8 @@ import { setFoxContext } from "@/lib/fox-bus";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import type { HazardType } from "@/lib/hazard-model";
+import { CurrentNews } from '@/components/app/CurrentNews';
+import { DrillControls } from '@/components/app/DrillControls';
 
 export const Route = createFileRoute("/_authenticated/prevent")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Prevent — weather, water & glaciers — FOX" }, { name: "description", content: "Weather outlook, river and sea levels, glacier melt trends from NASA data, and prevention checklists before disaster strikes." }, { property: "og:title", content: "Prevent — FOX" }, { property: "og:description", content: "Act before disaster strikes: outlooks, water levels and NASA climate trends." }] }),
@@ -71,7 +73,10 @@ function Prevent() {
           <div className="rounded-xl border border-med/60 bg-med/10 p-2"><LevelBadge level="medium" /><p className="mt-1">Pop-up alert in the month the hazard may occur.</p></div>
           <div className="rounded-xl border border-high/70 bg-high/10 p-2"><LevelBadge level="high" /><p className="mt-1">24–48 h before: 2-minute alarm + SMS with nearest safe area.</p></div>
         </div>
+        <div className="mt-3"><DrillControls /></div>
       </Panel>
+
+      <CurrentNews />
 
       <Panel title="Weather outlook" icon={<CloudSun className="h-4 w-4 text-cyan" />} right={button}>
         {a.isLoading && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading forecast…</p>}

@@ -9,6 +9,8 @@ export function isEmergencyCommand(text: string) {
 export function parseLocalCommand(text: string) {
  const q = text.trim().replace(/^(hey|hi|ok)\s+fox[,!\s]*/i, '');
  if (isEmergencyCommand(q)) return { name: 'trigger_sos', args: { reason: q } };
+ if (/^(?:run|start|create|test) (?:a )?(?:red|high)(?:[- ]alert)? (?:drill|practice)[.!]?$/i.test(q)) return { name: 'run_drill', args: { tier: 'high' } };
+ if (/^(?:open|show|go to) (?:direct sos|emergency contacts|ambulance|police|fire options?)[.!]?$/i.test(q)) return { name: 'navigate', args: { page: 'sos' } };
  const page = q.match(/^(?:open|go to|show)\s+(dashboard|map|sos|prevent|reports|settings|offline|trends)(?:\s+page)?[.!]?$/i);
  if (page) return { name: 'navigate', args: { page: page[1]?.toLowerCase() ?? 'dashboard' } };
  const lang = q.match(/(?:switch|change|set).*\b(hindi|marathi|english)\b/i);

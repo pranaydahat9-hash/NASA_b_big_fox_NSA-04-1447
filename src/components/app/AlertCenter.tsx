@@ -10,6 +10,7 @@ import { sendAlertSms } from "@/lib/sos.functions";
 import { startAlarm, haptic } from "@/lib/haptics";
 import { useSettings } from "@/lib/settings";
 import { onFox } from "@/lib/fox-bus";
+import { automaticAlertSmsAllowed } from '@/lib/emergency-policy';
 import { HAZ_NAME, HazardGlyph } from "./bits";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -52,13 +53,14 @@ export function AlertCenter() {
   useEffect(() => {
     if (!active || active.tier !== "high") return;
     haptic("warn");
-    if (s.alarmSound) stopRef.current = startAlarm(120_000);
+    setSafe(null); setSms(null);
+    if (s.alarmSound) { try { stopRef.current = startAlarm(120_000); } catch { setSms('Alarm sound unavailable in this browser.'); } }
     const l = loc;
     if (l) safeFn({ data: { lat: l.lat, lon: l.lon } }).then((r) => {
       const best = [...r.zones].sort((a, b) => ((b.elevation ?? 0) - (a.elevation ?? 0)) * 0.002 + (a.distKm - b.distKm))[0];
       if (best) setSafe(best);
       const text = `${active.drill ? "[DRILL] " : ""}FOX HIGH ALERT: ${HAZ_NAME[active.hazard.type]} expected ${active.hazard.window}. ${active.hazard.harm}${best ? ` Nearest safe area: ${best.name}, ${best.distKm} km — https://maps.google.com/?q=${best.lat},${best.lon}` : ""}`;
-      smsFn({ data: { text } }).then((x) => setSms(x.reason ?? x.deliveries.map((d) => `${d.status}: ${d.detail}`).join("; ") ?? null)).catch(() => setSms("SMS failed to send"));
+      if (automaticAlertSmsAllowed(active.drill)) smsFn({ data: { text } }).then((x) => setSms(x.reason ?? x.deliveries.map((d) => `${d.status}: ${d.detail}`).join("; ") ?? null)).catch(() => setSms("SMS failed to send"));
     }).catch(() => {});
     return () => { stopRef.current?.(); stopRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,11 +71,12 @@ export function AlertCenter() {
 
   if (active.tier === "high") {
     return (
-      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 p-6 text-center text-destructive-foreground animate-alarm" role="alertdialog">
+      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-4 overflow-y-auto p-6 text-center text-destructive-foreground animate-alarm" role="alertdialog" aria-label={active.drill ? 'Red-alert drill' : 'High hazard alert'}>
         <AlertTriangle className="h-16 w-16 animate-jitter" />
         <div className="font-mono text-xs tracking-[0.3em]">{active.drill ? "DRILL · " : ""}HIGH ALERT · 24–48 H</div>
         <h2 className="text-3xl font-bold">{HAZ_NAME[active.hazard.type]}</h2>
         <p className="max-w-sm text-sm">{active.hazard.window}. {active.hazard.harm}</p>
+        {active.drill && <p className="text-xs">Practice only · No messages sent · No emergency services contacted</p>}
         {safe && (
           <Link to="/map" search={{ lat: safe.lat, lon: safe.lon, safe: 1 }} onClick={close} className="haptic flex items-center gap-2 rounded-2xl bg-background/20 px-4 py-3 text-sm font-semibold">
             <MapPin className="h-4 w-4" /> Nearest safe area: {safe.name} · {safe.distKm} km
@@ -84,6 +87,7 @@ export function AlertCenter() {
           <Button variant="glass" onClick={() => { stopRef.current?.(); stopRef.current = null; }}><VolumeX /> Silence</Button>
           <Button variant="glass" onClick={close}><X /> I'm safe</Button>
         </div>
+        <Button asChild variant="glass"><Link to="/sos" onClick={close}>Direct SOS</Link></Button>
         {!s.alarmSound && <p className="flex items-center gap-1 text-xs"><Volume2 className="h-3 w-3" /> Alarm sound is off in Settings</p>}
       </div>
     );

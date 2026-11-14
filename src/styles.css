@@ -208,7 +208,7 @@
 @keyframes jitter { 0%,100% { transform: translate(0,0) } 25% { transform: translate(.5px,-.5px) } 50% { transform: translate(-.5px,.5px) } 75% { transform: translate(.5px,.5px) } }
 @keyframes float-up { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
 @keyframes wave { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
-@keyframes alarm { 0%,100% { background-color: oklch(0.64 0.25 25 / .95) } 50% { background-color: oklch(0.45 0.2 25 / .95) } }
+@keyframes alarm { 0%,100% { background-color: var(--hazard-high) } 50% { background-color: color-mix(in oklab, var(--hazard-high) 85%, var(--background)) } }
 @keyframes bars { 0%,100% { transform: scaleY(.3) } 50% { transform: scaleY(1) } }
 
 @utility animate-ping-slow { animation: ping-slow 1.8s cubic-bezier(0,0,.2,1) infinite; }
@@ -217,7 +217,7 @@
 @utility animate-jitter { animation: jitter .35s steps(2) infinite; }
 @utility animate-float-up { animation: float-up .4s ease-out both; }
 @utility animate-wave { animation: wave 6s linear infinite; }
-@utility animate-alarm { animation: alarm .6s ease-in-out infinite; }
+@utility animate-alarm { background-color: var(--hazard-high); animation: alarm 2s ease-in-out infinite; }
 @utility animate-bars { animation: bars .9s ease-in-out infinite; transform-origin: bottom; }
 
 /* Leaflet */
