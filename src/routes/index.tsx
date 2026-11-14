@@ -1,23 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { FoxMark } from "@/components/app/FoxMark";
+import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
-  component: Index,
-});
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+  head: () => ({ meta: [{ title: "FOX — Satellite Disaster Watch" }, { name: "description", content: "Disaster predictions for any place from NASA, USGS and weather satellites, with SOS and a voice agent." }, { property: "og:title", content: "FOX — Satellite Disaster Watch" }, { property: "og:description", content: "Disaster predictions for any place from NASA, USGS and weather satellites." }] }),
+  component: () => (
+    <div className="grid-bg flex min-h-screen flex-col items-center justify-center gap-6 px-6 text-center">
+      <FoxMark className="h-20 w-20" />
+      <h1 className="text-4xl font-bold">Prevention beats <span className="text-gradient">response</span>.</h1>
+      <p className="max-w-sm text-sm text-muted-foreground">Live NASA, USGS and weather data turned into area-by-area disaster predictions, safe zones and one-tap SOS.</p>
+      <Button asChild variant="neon" className="h-12 px-8"><Link to="/auth">Get started</Link></Button>
     </div>
-  );
-}
+  ),
+});
