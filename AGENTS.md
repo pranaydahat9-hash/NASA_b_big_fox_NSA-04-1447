@@ -41,3 +41,4 @@ use the editor.
 - Generate the app-shell worker with vite-plugin-pwa and register only through one preview-guarded wrapper; cache public help, not private navigations, and use NetworkFirst navigation fallback.
 - Nearby Community is a transport-free design preview: local drafts remain in memory, no fake peers or receipts, and radio actions stay disabled until a native transport exists.
 - Keep PDF preparation independent of tile caching and offer a ready-file click for delivery; theme and offline-provider restrictions must not block PDFs or lose mobile user activation.
+- Version map query keys when response contracts change and render missing availability as unknown; existing in-memory responses must remain safe during live updates.

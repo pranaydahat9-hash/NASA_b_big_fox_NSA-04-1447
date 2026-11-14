@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { haptic } from "@/lib/haptics";
 import { setFoxContext } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
+import { deliverFile } from "@/lib/file-download";
 
 export const Route = createFileRoute("/_authenticated/trends")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Climate trends & regional comparison — FOX" }, { name: "description", content: "Compare NASA climate trends between regions with statistical tests and automated investigation reports." }, { property: "og:title", content: "Climate trends — FOX" }, { property: "og:description", content: "NASA POWER trends compared across regions, with automated reports." }] }),
@@ -37,6 +38,8 @@ function Trends() {
   const [sel, setSel] = useState(["mumbai", "delhi", "gangotri"]);
   const [metric, setMetric] = useState<Metric>("t2m");
   const [making, setMaking] = useState(false);
+  const [preparedPdf, setPreparedPdf] = useState<{ blob: Blob; filename: string } | null>(null);
+  useEffect(() => { setPreparedPdf(null); }, [sel.join(",")]);
   const fn = useServerFn(getClimateTrend);
   const places = sel.map((id) => PLACES.find((p) => p.id === id)!);
   const qs = useQueries({ queries: places.map((p) => ({ queryKey: ["trend", p.lat.toFixed(2), p.lon.toFixed(2)], staleTime: 24 * 3600e3, queryFn: () => fn({ data: { lat: p.lat, lon: p.lon, start: 1991 } }) })) });
@@ -83,7 +86,7 @@ function Trends() {
       for (const f of [...(summary ? [{ text: summary }] : []), ...findings]) { const lines = doc.splitTextToSize("• " + f.text, 186); if (y + lines.length * 4.5 > 280) { doc.addPage(); y = 15; } doc.text(lines, 12, y); y += lines.length * 4.5 + 2; }
       y += 4; doc.setFontSize(8); doc.setTextColor(110, 110, 130);
       doc.text(doc.splitTextToSize(`Method: ordinary least-squares linear regression on NASA POWER annual means; p-values approximate (t-test on slope). Projections assume trends continue. Sources: ${ready.map((r) => r.t!.source.url).join(" ; ")}`, 186), 12, y);
-      doc.save(`FOX_climate_investigation_${new Date().toISOString().slice(0, 10)}.pdf`); haptic("success");
+      setPreparedPdf({ blob: doc.output("blob"), filename: `FOX_climate_investigation_${new Date().toISOString().slice(0, 10)}.pdf` }); haptic("success");
     } catch (e) { toast.error((e as Error).message); } finally { setMaking(false); }
   }
 
@@ -123,7 +126,8 @@ function Trends() {
       {ready.length > 0 && (
         <Panel title="Automated investigation report" icon={<FileSearch className="h-4 w-4 text-primary" />}>
           <ul className="space-y-2 text-xs">{findings.map((f) => <li key={f.p.id} className="rounded-xl border bg-surface/60 p-2.5">{f.text}<div className="mt-1 text-[10px] text-muted-foreground"><a href={f.t.source.url} target="_blank" rel="noreferrer" className="text-primary underline">NASA POWER</a> · fetched {ago(f.t.source.fetchedAt)}</div></li>)}</ul>
-          <Button className="mt-3 w-full gap-2" onClick={pdf} disabled={making}>{making ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}Download investigation PDF</Button>
+          <Button className="mt-3 w-full gap-2" onClick={pdf} disabled={making}>{making ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}Prepare investigation PDF</Button>
+          {preparedPdf && <Button variant="outline" className="mt-2 w-full" onClick={() => void deliverFile(preparedPdf.blob, preparedPdf.filename).catch(() => toast.error("Could not download investigation PDF"))}><FileDown />Download investigation PDF</Button>}
         </Panel>
       )}
     </div>

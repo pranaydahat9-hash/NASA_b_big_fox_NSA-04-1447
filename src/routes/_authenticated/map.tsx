@@ -13,6 +13,7 @@ import { downloadArea, saveArea, cachedTileBlobUrl, TILE_PROVIDERS, type BaseSty
 import { buildReportPdf } from "@/lib/pdf";
 import { deliverFile } from "@/lib/file-download";
 import { mapDownloadOptions } from "@/lib/map-download-policy";
+import { mapSourceStatus } from "@/lib/map-source-status";
 import { saveReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
 import { HAZ_NAME, HazardGlyph, LevelBadge, SourceList, Stat, ago, levelText } from "@/components/app/bits";
@@ -72,7 +73,7 @@ function MapPage() {
 
   useEffect(() => { const id = setTimeout(() => setQDeb(q), 300); return () => clearTimeout(id); }, [q]);
   const suggestions = useQuery({ queryKey: ["places", qDeb], enabled: qDeb.length >= 2 && qDeb !== point?.name, queryFn: () => searchFn({ data: { q: qDeb } }) });
-  const global = useQuery({ queryKey: ["global"], queryFn: () => getGlobalEvents(), staleTime: 10 * 60e3 });
+  const global = useQuery({ queryKey: ["global", "availability-v1"], queryFn: () => getGlobalEvents(), staleTime: 10 * 60e3 });
   const assess = useAssessment(point?.lat, point?.lon);
   const safe = useQuery({ queryKey: ["safe", point?.lat?.toFixed(3), point?.lon?.toFixed(3)], enabled: !!point && (show.safe || sheet === "safe"), queryFn: () => { if (!point) throw new Error("Select a place first"); return safeFn({ data: point }); }, staleTime: 30 * 60e3 });
 
@@ -201,6 +202,8 @@ function MapPage() {
   };
 
   const a = assess.data;
+  const usgsStatus = mapSourceStatus(global.data?.availability, "usgs");
+  const eonetStatus = mapSourceStatus(global.data?.availability, "eonet");
   return (
     <div className="space-y-3">
       <div className="relative">
@@ -229,15 +232,15 @@ function MapPage() {
           ))}
         </div>
         <div className="pointer-events-none absolute bottom-2 left-2 z-[400] rounded-lg bg-background/70 px-2 py-1 font-mono text-[9px] text-muted-foreground backdrop-blur">
-          <Layers className="mr-1 inline h-3 w-3" />{global.data ? `${global.data.availability.usgs ? `${global.data.quakes.length} quakes` : "USGS unavailable"} · ${global.data.availability.eonet ? `${global.data.events.length} NASA events` : "NASA unavailable"} · ${ago(global.data.fetchedAt)}` : global.isError ? "Map feeds unavailable" : "loading layers…"}
+          <Layers className="mr-1 inline h-3 w-3" />{global.data ? `${usgsStatus === "Updated" ? `${global.data.quakes.length} quakes` : `USGS: ${usgsStatus}`} · ${eonetStatus === "Updated" ? `${global.data.events.length} NASA events` : `NASA: ${eonetStatus}`} · ${ago(global.data.fetchedAt)}` : global.isError ? "Map feeds unavailable" : "loading layers…"}
         </div>
       </div>
 
       <section className="space-y-2 border-b pb-3" aria-label="Map data sources">
         <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">Map data connections</h2><Button size="sm" variant="ghost" disabled={global.isFetching || assess.isFetching || safe.isFetching} onClick={() => { void global.refetch(); if (point) void assess.refetch(); if (point && (show.safe || sheet === "safe")) void safe.refetch(); }}><RefreshCw className={cn("h-4 w-4", global.isFetching && "animate-spin")} />Refresh</Button></div>
         <div className="grid gap-2 text-xs sm:grid-cols-2">
-          <a className="flex items-center justify-between gap-2 text-primary" href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noreferrer">USGS earthquakes <span className="text-muted-foreground">{global.data ? global.data.availability.usgs ? "Updated" : "Unavailable" : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
-          <a className="flex items-center justify-between gap-2 text-primary" href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noreferrer">NASA EONET <span className="text-muted-foreground">{global.data ? global.data.availability.eonet ? "Updated" : "Unavailable" : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
+          <a className="flex items-center justify-between gap-2 text-primary" href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noreferrer">USGS earthquakes <span className="text-muted-foreground">{global.data ? usgsStatus : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
+          <a className="flex items-center justify-between gap-2 text-primary" href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noreferrer">NASA EONET <span className="text-muted-foreground">{global.data ? eonetStatus : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
           <a className="text-primary" href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather / river / marine — Open-Meteo <ExternalLink className="inline h-3 w-3" /></a>
           <a className="text-primary" href="https://wiki.openstreetmap.org/wiki/Overpass_API" target="_blank" rel="noreferrer">Safe zones — OpenStreetMap Overpass <ExternalLink className="inline h-3 w-3" /></a>
         </div>

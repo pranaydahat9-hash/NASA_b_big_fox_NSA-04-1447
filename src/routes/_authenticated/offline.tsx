@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Panel, ago } from "@/components/app/bits";
 import { supabase } from '@/integrations/supabase/client';
 import { OFFLINE_HELP_CONTACTS, validateHelpContacts } from '@/lib/offline-help-policy';
+import { deliverFile } from '@/lib/file-download';
 
 export const Route = createFileRoute("/_authenticated/offline")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Offline maps & emergency info — FOX" }, { name: "description", content: "Downloaded maps, safe zones, saved reports and emergency guidance that work without internet." }, { property: "og:title", content: "Offline — FOX" }, { property: "og:description", content: "Maps, safe zones and emergency info that work without internet." }] }),
@@ -70,7 +71,7 @@ function Offline() {
         )}
       </Panel>
       <Panel title="Saved reports" icon={<FileText className="h-4 w-4 text-cyan" />}>
-        {reports.length === 0 ? <p className="text-xs text-muted-foreground">No PDF reports saved.</p> : <ul className="space-y-1 text-xs">{reports.map((r) => <li key={r.id}><button className="text-left hover:underline" onClick={() => window.open(URL.createObjectURL(r.blob))}>{r.place} · {new Date(r.createdAt).toLocaleDateString()} · {(r.blob.size/1024).toFixed(0)} KB</button></li>)}</ul>}
+        {reports.length === 0 ? <p className="text-xs text-muted-foreground">No PDF reports saved.</p> : <ul className="space-y-1 text-xs">{reports.map((r) => <li key={r.id} className="flex items-center gap-2"><Button variant="link" className="min-w-0 flex-1 justify-start truncate px-0 text-xs" onClick={() => { const url = URL.createObjectURL(r.blob); window.open(url, "_blank"); setTimeout(() => URL.revokeObjectURL(url), 30000); }}>{r.place} · {new Date(r.createdAt).toLocaleDateString()} · {(r.blob.size/1024).toFixed(0)} KB</Button><Button size="icon" variant="ghost" aria-label={`Download report for ${r.place}`} onClick={() => void deliverFile(r.blob, `${r.title.replace(/[^\w]+/g, "_")}.pdf`).catch(() => toast.error("Could not download saved PDF"))}><Download className="h-4 w-4" /></Button></li>)}</ul>}
       </Panel>
       <Panel title="Emergency numbers" icon={<Phone className="h-4 w-4 text-high" />}>
         <div className="grid grid-cols-2 gap-2">{NUMBERS.map(([n, l]) => <a key={n} href={`tel:${n}`} className="rounded-xl border bg-surface/60 p-2.5 transition active:scale-95"><div className="font-mono text-lg font-bold text-high">{n}</div><div className="text-[11px] text-muted-foreground">{l}</div></a>)}</div>
