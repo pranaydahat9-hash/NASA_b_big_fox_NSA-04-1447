@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { haptic } from "@/lib/haptics";
+import { emitFox } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/settings")({
@@ -97,7 +98,13 @@ function SettingsPage() {
         <Row label="Medium (yellow) — pop-up alerts" k="notifyMedium" />
         <Row label="High (red) — alarm + SMS" k="notifyHigh" />
         <Row label="2-minute alarm sound" k="alarmSound" />
-        <Link to="/sos" className="mt-1 inline-block text-xs text-primary underline">Manage emergency contacts →</Link>
+        <p className="mt-2 text-xs font-semibold">Test the alerts (drill)</p>
+        <div className="mt-1 grid grid-cols-3 gap-2">
+          <Button size="sm" variant="outline" className="border-low/60 text-low" onClick={() => toast("🟢 Low alert (news): Glacier melt above normal in your region — months of lead time. Plan ahead.")}>Low</Button>
+          <Button size="sm" variant="outline" className="border-med/60 text-med" onClick={() => emitFox("drill", "medium")}>Medium</Button>
+          <Button size="sm" variant="outline" className="border-high/60 text-high" onClick={() => emitFox("drill", "high")}>High</Button>
+        </div>
+        <Link to="/sos" className="mt-2 inline-block text-xs text-primary underline">Manage emergency contacts →</Link>
       </Panel>
       <Panel title="Account" icon={<User className="h-4 w-4 text-cyan" />}>
         <p className="mb-2 text-xs text-muted-foreground">{email}</p>

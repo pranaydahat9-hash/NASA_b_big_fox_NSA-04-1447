@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -100,6 +100,7 @@ function Prevent() {
 
       {d && (
         <Panel title="Flood & tsunami water levels" icon={<Waves className="h-4 w-4 text-cyan" />}>
+          <WaterGauge ratio={d.water.ratio} wave={waves.length ? Math.max(...waves.map((w) => w.m)) : null} />
           {river.length > 0 ? (
             <>
               <p className="mb-1 text-[11px] text-muted-foreground">River discharge (m³/s) vs. the normal median. Higher than {d.water.medianRecent ? "2×" : ""} median signals flood risk.</p>
@@ -124,6 +125,8 @@ function Prevent() {
           <div className="mt-2"><SourceList readings={d.water.sources} /></div>
         </Panel>
       )}
+
+      <Link to="/trends" className="haptic glass flex items-center justify-between rounded-[1.4rem] p-4 text-sm font-semibold">Compare regions & get an investigation report<span className="text-primary">→</span></Link>
 
       <Panel title="Glacier melt watch" icon={<Mountain className="h-4 w-4 text-primary" />}>
         <div className="mb-2 flex flex-wrap gap-1.5">
@@ -169,6 +172,34 @@ function Prevent() {
           ))}
         </Panel>
       )}
+    </div>
+  );
+}
+
+function WaterGauge({ ratio, wave }: { ratio: number | null; wave: number | null }) {
+  const fill = ratio == null ? 0 : Math.min(1, ratio / 3);
+  const lvl = ratio == null ? "low" : ratio >= 2 ? "high" : ratio >= 1.4 ? "medium" : "low";
+  const waveLvl = wave == null ? "low" : wave >= 4 ? "high" : wave >= 2.5 ? "medium" : "low";
+  const col = (l: string) => (l === "high" ? "bg-high" : l === "medium" ? "bg-med" : "bg-low");
+  const txt = (l: string) => (l === "high" ? "text-high" : l === "medium" ? "text-med" : "text-low");
+  return (
+    <div className="mb-3 grid grid-cols-2 gap-3">
+      {[{ t: "Flood level", v: ratio != null ? `${ratio.toFixed(2)}× normal` : "No gauge", f: fill, l: lvl, marks: ["3×", "2× danger", "1.4× warn", "normal"] }, { t: "Tsunami / surge", v: wave != null ? `${wave.toFixed(1)} m waves` : "Inland", f: wave == null ? 0 : Math.min(1, wave / 6), l: waveLvl, marks: ["6 m", "4 m danger", "2.5 m warn", "calm"] }].map((g) => (
+        <div key={g.t} className="rounded-2xl border bg-surface/60 p-3">
+          <p className="text-[11px] font-semibold text-muted-foreground">{g.t}</p>
+          <div className="mt-2 flex items-end gap-2">
+            <div className="relative h-28 w-12 overflow-hidden rounded-xl border-2 bg-card">
+              <div className={cn("absolute inset-x-0 bottom-0 transition-all duration-1000 opacity-80", col(g.l))} style={{ height: `${Math.max(4, g.f * 100)}%` }}>
+                <div className="absolute -top-1.5 left-0 h-3 w-[200%] animate-wave rounded-[50%] bg-inherit" />
+              </div>
+              <div className="absolute inset-x-0 top-[33%] border-t border-dashed border-high/70" />
+              <div className="absolute inset-x-0 top-[53%] border-t border-dashed border-med/70" />
+            </div>
+            <div className="flex h-28 flex-col justify-between text-[9px] text-muted-foreground">{g.marks.map((m) => <span key={m}>{m}</span>)}</div>
+          </div>
+          <p className={cn("mt-2 text-sm font-bold", txt(g.l))}>{g.v}</p>
+        </div>
+      ))}
     </div>
   );
 }
