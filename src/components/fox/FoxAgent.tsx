@@ -156,7 +156,7 @@ export function FoxAgent() {
     <>
       <button aria-label="Open FOX assistant" onClick={() => setOpen(true)} className="haptic fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-neon glow sm:right-[max(1rem,calc(50vw-23rem))]">
         <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping-slow" />
-        <FoxMark className="relative h-9 w-9 [&_path]:fill-background" />
+        <FoxMark className="relative h-8 w-8 rounded-full" />
         {s.handsFree && <Ear className="absolute -left-1 -top-1 h-4 w-4 rounded-full bg-background p-0.5 text-cyan" />}
       </button>
       {open && (
