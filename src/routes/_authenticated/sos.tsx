@@ -2,14 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Siren, Phone, MessageSquare, Trash2, UserPlus, Loader2, CheckCircle2, XCircle, Clock, MapPin, Users, Ambulance, Shield, Flame } from "lucide-react";
+import { Siren, Phone, MessageSquare, Trash2, UserPlus, Loader2, CheckCircle2, XCircle, Clock, MapPin, Users, Ambulance, Shield, Flame, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { getSmsStatus, refreshSosDelivery } from "@/lib/sos.functions";
 import { useSos, getLastSos, subscribeSos, manualLinks, type SosResult } from "@/lib/use-sos";
 import { onFox } from "@/lib/fox-bus";
 import { haptic } from "@/lib/haptics";
-import { Panel, ago } from "@/components/app/bits";
+import { Panel, LevelBadge, ago } from "@/components/app/bits";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -145,7 +145,14 @@ function SosPage() {
         <Button className="mt-2 w-full gap-1.5" onClick={add}><UserPlus className="h-4 w-4" />Add contact</Button>
       </Panel></div>
 
-      <Panel title="Red-alert practice" icon={<Siren className="h-4 w-4 text-high" />}><DrillControls /></Panel>
+      <Panel title="Three alert levels" icon={<Bell className="h-4 w-4 text-primary" />}>
+        <div className="grid grid-cols-3 gap-2 text-[11px]">
+          <div className="rounded-xl border border-low/50 bg-low/10 p-2"><LevelBadge level="low" /><p className="mt-1">News-style notice, months ahead (e.g. faster glacier melt).</p></div>
+          <div className="rounded-xl border border-med/60 bg-med/10 p-2"><LevelBadge level="medium" /><p className="mt-1">Pop-up alert in the month the hazard may occur.</p></div>
+          <div className="rounded-xl border border-high/70 bg-high/10 p-2"><LevelBadge level="high" /><p className="mt-1">24–48 h before: 2-minute alarm + SMS with nearest safe area.</p></div>
+        </div>
+        <div className="mt-3"><DrillControls /></div>
+      </Panel>
 
       <Panel title="SOS history" icon={<Clock className="h-4 w-4 text-muted-foreground" />}>
         {(history.data ?? []).length === 0 ? <p className="text-xs text-muted-foreground">No SOS sent yet.</p> : (

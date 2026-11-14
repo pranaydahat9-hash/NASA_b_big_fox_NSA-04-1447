@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CloudSun, Waves, Mountain, ShieldCheck, Loader2, Bell, CheckSquare, Square } from "lucide-react";
+import { CloudSun, Waves, Mountain, ShieldCheck, Loader2, CheckSquare, Square } from "lucide-react";
 import { Area, AreaChart, Bar, CartesianGrid, ComposedChart, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getClimateTrend } from "@/lib/hazards.functions";
 import { useAssessment } from "@/lib/use-assessment";
@@ -13,7 +13,6 @@ import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import type { HazardType } from "@/lib/hazard-model";
 import { CurrentNews } from '@/components/app/CurrentNews';
-import { DrillControls } from '@/components/app/DrillControls';
 
 export const Route = createFileRoute("/_authenticated/prevent")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Prevent — weather, water & glaciers — FOX" }, { name: "description", content: "Weather outlook, river and sea levels, glacier melt trends from NASA data, and prevention checklists before disaster strikes." }, { property: "og:title", content: "Prevent — FOX" }, { property: "og:description", content: "Act before disaster strikes: outlooks, water levels and NASA climate trends." }] }),
@@ -67,15 +66,6 @@ function Prevent() {
 
   return (
     <div className="space-y-4">
-      <Panel title="Three alert levels" icon={<Bell className="h-4 w-4 text-primary" />}>
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
-          <div className="rounded-xl border border-low/50 bg-low/10 p-2"><LevelBadge level="low" /><p className="mt-1">News-style notice, months ahead (e.g. faster glacier melt).</p></div>
-          <div className="rounded-xl border border-med/60 bg-med/10 p-2"><LevelBadge level="medium" /><p className="mt-1">Pop-up alert in the month the hazard may occur.</p></div>
-          <div className="rounded-xl border border-high/70 bg-high/10 p-2"><LevelBadge level="high" /><p className="mt-1">24–48 h before: 2-minute alarm + SMS with nearest safe area.</p></div>
-        </div>
-        <div className="mt-3"><DrillControls /></div>
-      </Panel>
-
       <CurrentNews />
 
       <Panel title="Weather outlook" icon={<CloudSun className="h-4 w-4 text-cyan" />} right={button}>
