@@ -23,7 +23,7 @@ async function mapImage(lat: number, lon: number, zones: { lat: number; lon: num
     const px = (la: number, lo: number) => {
       const X = ((lo + 180) / 360) * n, rr = (la * Math.PI) / 180;
       const Y = ((1 - Math.log(Math.tan(rr) + 1 / Math.cos(rr)) / Math.PI) / 2) * n;
-      return [(X - x0) * 256, (Y - y0) * 256];
+      return [(X - x0) * 256, (Y - y0) * 256] as [number, number];
     };
     for (const zn of zones) { const [a, b] = px(zn.lat, zn.lon); g.fillStyle = "#22aa5a"; g.beginPath(); g.arc(a, b, 7, 0, 7); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke(); }
     const [a, b] = px(lat, lon);
@@ -46,7 +46,7 @@ export async function buildReportPdf(a: Assessment, place: string, zones: { name
   doc.setFont("helvetica", "normal"); doc.setFontSize(10);
   doc.text(`${place}  ·  ${a.lat.toFixed(4)}, ${a.lon.toFixed(4)}`, 14, 22);
   doc.text(`Generated ${new Date(a.generatedAt).toUTCString()}`, 14, 28);
-  const lv = LV[a.overall];
+  const lv = LV[a.overall] ?? ([128, 128, 128] as RGB);
   doc.setFillColor(...lv); doc.roundedRect(W - 58, 10, 44, 14, 3, 3, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.text(`OVERALL: ${a.overall.toUpperCase()}`, W - 36, 19, { align: "center" });
 
@@ -62,7 +62,7 @@ export async function buildReportPdf(a: Assessment, place: string, zones: { name
   for (const h of a.hazards) {
     doc.setTextColor(60); doc.text(h.type.replace("_", " "), 14, y + 3.5);
     doc.setFillColor(235, 235, 245); doc.rect(45, y, 130, 4.5, "F");
-    doc.setFillColor(...LV[h.level]); doc.rect(45, y, Math.max(1, 1.3 * h.score), 4.5, "F");
+    doc.setFillColor(...(LV[h.level] ?? ([128, 128, 128] as RGB))); doc.rect(45, y, Math.max(1, 1.3 * h.score), 4.5, "F");
     doc.text(`${h.score}  ${h.level}`, 178, y + 3.5); y += 6.5;
   }
 

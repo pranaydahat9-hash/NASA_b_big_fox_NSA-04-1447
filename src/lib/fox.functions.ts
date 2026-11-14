@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 export type FoxMsg = { role: "user" | "assistant"; content: string };
-export type FoxAction = { name: string; args: Record<string, unknown> };
+export type FoxAction = { name: string; args: Record<string, string | number | boolean | null> };
 
 const tools = [
   { type: "function" as const, name: "navigate", description: "Open an app page.", parameters: { type: "object", properties: { page: { type: "string", enum: ["dashboard", "map", "sos", "prevent", "reports", "settings", "offline"] } }, required: ["page"], additionalProperties: false } },

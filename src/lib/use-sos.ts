@@ -4,7 +4,7 @@ import { sendSos } from "./sos.functions";
 import { getLastLocation, requestLocation } from "./location";
 import { haptic } from "./haptics";
 
-export type SosResult = Awaited<ReturnType<typeof sendSos>> & { lat: number | null; lon: number | null; at: string; locError?: string };
+export type SosResult = Awaited<ReturnType<typeof sendSos>> & { lat: number | null; lon: number | null; at: string; locError?: string | undefined };
 let last: SosResult | null = null;
 const subs = new Set<(r: SosResult | null) => void>();
 
@@ -17,10 +17,11 @@ export function useSos() {
     try { const l = await requestLocation(10000); lat = l.lat; lon = l.lon; acc = l.accuracy; }
     catch (e) { locError = (e as Error).message; const l = getLastLocation(); if (l) { lat = l.lat; lon = l.lon; acc = l.accuracy; locError += " — used last known location"; } }
     try {
-      const r = await fn({ data: { lat, lon, accuracy: acc, trigger: trig, note } });
-      last = { ...r, lat, lon, at: new Date().toISOString(), locError };
+      const r = await fn({ data: { lat, lon, accuracy: acc, trigger: trig, ...(note !== undefined ? { note } : {}) } });
+      const res: SosResult = { ...r, lat, lon, at: new Date().toISOString(), locError };
+      last = res;
       subs.forEach((s) => s(last)); haptic("success");
-      return last;
+      return res;
     } finally { setBusy(false); }
   }, [fn]);
   return { trigger, busy };

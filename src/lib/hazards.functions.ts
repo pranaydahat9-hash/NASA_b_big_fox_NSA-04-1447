@@ -105,7 +105,7 @@ export const assessArea = createServerFn({ method: "GET" })
       const future = daily.filter((x) => x.date >= todayStr);
       const past7 = daily.filter((x) => x.date < todayStr);
       // Heavy rain
-      const maxRain = future.reduce((a, b) => (b.precip > a.precip ? b : a), future[0]);
+      const maxRain = future.length ? future.reduce((a, b) => (b.precip > a.precip ? b : a)) : null;
       if (maxRain) {
         const lvl = rainLevel(maxRain.precip);
         hazards.push({
@@ -120,7 +120,7 @@ export const assessArea = createServerFn({ method: "GET" })
           ],
         });
       }
-      const hot = future.reduce((a, b) => (b.tmax > a.tmax ? b : a), future[0]);
+      const hot = future.length ? future.reduce((a, b) => (b.tmax > a.tmax ? b : a)) : null;
       if (hot) {
         const lvl = heatLevel(hot.tmax);
         hazards.push({
@@ -131,7 +131,7 @@ export const assessArea = createServerFn({ method: "GET" })
           readings: [{ label: "Max temperature (16-day)", value: `${hot.tmax.toFixed(1)} °C`, observedAt: wSrc.observedAt, source: wSrc.source, url: fcUrl }],
         });
       }
-      const windy = future.reduce((a, b) => (b.gust > a.gust ? b : a), future[0]);
+      const windy = future.length ? future.reduce((a, b) => (b.gust > a.gust ? b : a)) : null;
       if (windy) {
         const lvl = windLevel(windy.gust);
         hazards.push({
@@ -148,9 +148,9 @@ export const assessArea = createServerFn({ method: "GET" })
     const water: Assessment["water"] = { river: [], ratio: null, medianRecent: null, peakForecast: null, peakDate: null, waveMax: [], tsunamiQuake: null, sources: [] };
     if (fl?.daily?.river_discharge) {
       const t: string[] = fl.daily.time;
-      water.river = t.map((date, i) => ({ date, discharge: fl.daily.river_discharge[i], median: fl.daily.river_discharge_median?.[i] ?? null, isForecast: date >= todayStr }));
+      water.river = t.map((date, i) => ({ date, discharge: fl.daily.river_discharge[i] ?? null, median: fl.daily.river_discharge_median?.[i] ?? null, isForecast: date >= todayStr }));
       const past = water.river.filter((r) => !r.isForecast && r.discharge != null).map((r) => r.discharge as number).sort((a, b) => a - b);
-      const med = past.length ? past[Math.floor(past.length / 2)] : null;
+      const med = past.length ? (past[Math.floor(past.length / 2)] ?? null) : null;
       const fut = water.river.filter((r) => r.isForecast && r.discharge != null);
       const peak = fut.reduce<(typeof fut)[number] | null>((a, b) => (!a || (b.discharge as number) > (a.discharge as number) ? b : a), null);
       water.medianRecent = med; water.peakForecast = peak?.discharge ?? null; water.peakDate = peak?.date ?? null;
@@ -224,11 +224,11 @@ export const assessArea = createServerFn({ method: "GET" })
     const fires: Assessment["fires"] = { count: 0, nearestKm: null, configured: !!firmsKey, points: [] };
     if (firmsCsv) {
       const lines = firmsCsv.trim().split("\n");
-      const head = lines[0].split(",");
+      const head = (lines[0] ?? "").split(",");
       const iLat = head.indexOf("latitude"), iLon = head.indexOf("longitude"), iFrp = head.indexOf("frp"), iDate = head.indexOf("acq_date");
       for (const l of lines.slice(1)) {
         const c = l.split(",");
-        const p = { lat: +c[iLat], lon: +c[iLon], frp: +c[iFrp], date: c[iDate] };
+        const p = { lat: Number(c[iLat]), lon: Number(c[iLon]), frp: Number(c[iFrp]), date: c[iDate] ?? "" };
         if (Number.isFinite(p.lat)) fires.points.push(p);
       }
       const dists = fires.points.map((p) => haversineKm({ lat, lon }, p)).filter((x) => x <= 50);

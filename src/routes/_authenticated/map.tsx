@@ -20,13 +20,13 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { Level } from "@/lib/hazard-model";
 
-type S = { q?: string; lat?: number; lon?: number; safe?: number };
+type S = { q?: string | undefined; lat?: number | undefined; lon?: number | undefined; safe?: number | undefined };
 export const Route = createFileRoute("/_authenticated/map")({
   validateSearch: (s: Record<string, unknown>): S => ({
-    q: typeof s.q === "string" ? s.q : undefined,
-    lat: s.lat != null && Number.isFinite(Number(s.lat)) ? Number(s.lat) : undefined,
-    lon: s.lon != null && Number.isFinite(Number(s.lon)) ? Number(s.lon) : undefined,
-    safe: s.safe ? 1 : undefined,
+    q: typeof s["q"] === "string" ? s["q"] : undefined,
+    lat: s["lat"] != null && Number.isFinite(Number(s["lat"])) ? Number(s["lat"]) : undefined,
+    lon: s["lon"] != null && Number.isFinite(Number(s["lon"])) ? Number(s["lon"]) : undefined,
+    safe: s["safe"] ? 1 : undefined,
   }),
   head: () => ({ meta: [{ title: "Live hazard map — FOX" }, { name: "description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }, { property: "og:title", content: "Live hazard map — FOX" }, { property: "og:description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }] }),
   component: MapPage,
@@ -42,7 +42,7 @@ function MapPage() {
   const mapRef = useRef<any>(null);
   const Lref = useRef<any>(null);
   const layers = useRef<Record<string, any>>({});
-  const [point, setPoint] = useState<{ lat: number; lon: number; name?: string } | null>(null);
+  const [point, setPoint] = useState<{ lat: number; lon: number; name?: string | undefined } | null>(null);
   const [q, setQ] = useState(search.q ?? "");
   const [qDeb, setQDeb] = useState("");
   const [show, setShow] = useState({ quakes: true, events: true, safe: !!search.safe, fires: true });
@@ -85,7 +85,7 @@ function MapPage() {
           return img;
         },
       });
-      layers.current.base = new (Cached as any)(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`, { subdomains: ["a"], maxZoom: 18, attribution: "© OpenStreetMap © CARTO" }).addTo(map);
+      layers.current["base"] = new (Cached as any)(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`, { subdomains: ["a"], maxZoom: 18, attribution: "© OpenStreetMap © CARTO" }).addTo(map);
       L.control.zoom({ position: "topright" }).addTo(map);
       map.on("click", (e: any) => pick(e.latlng.lat, e.latlng.lng));
       mapRef.current = map;
@@ -106,31 +106,31 @@ function MapPage() {
   useEffect(() => { if (search.lat != null && search.lon != null && mapRef.current) pick(search.lat, search.lon); if (search.safe) { setShow((x) => ({ ...x, safe: true })); setSheet("safe"); } /* eslint-disable-next-line */ }, [search.lat, search.lon, search.safe]);
 
   // Base style switch
-  useEffect(() => { layers.current.base?.setUrl(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`); }, [style]);
+  useEffect(() => { layers.current["base"]?.setUrl(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}.png`); }, [style]);
 
   // Overlays
   const icon = (color: string, size = 12, pulse = false) => Lref.current?.divIcon({ className: "fox-pin", iconSize: [size, size], html: `${pulse ? `<span class="ring" style="background:${color}"></span>` : ""}<span class="dot" style="background:${color};box-shadow:0 0 8px ${color}"></span>` });
   useEffect(() => {
     const L = Lref.current, map = mapRef.current; if (!L || !map) return;
-    layers.current.global?.remove();
+    layers.current["global"]?.remove();
     const g = L.layerGroup();
-    if (show.quakes) global.data?.quakes.forEach((x) => L.marker([x.lat, x.lon], { icon: icon("#ff8a3d", Math.min(22, 6 + x.mag * 2), x.mag >= 6) }).bindPopup(`<b>M${x.mag} earthquake</b><br/>${x.place}<br/>${new Date(x.time).toUTCString()}<br/><a href="${x.url}" target="_blank">USGS ↗</a>`).addTo(g));
-    if (show.events) global.data?.events.forEach((x) => L.marker([x.lat, x.lon], { icon: icon(/fire/i.test(x.category) ? "#ff4d6d" : /storm/i.test(x.category) ? "#4dd8ff" : /volcan/i.test(x.category) ? "#ffb703" : "#c77dff", 10, true) }).bindPopup(`<b>${x.title}</b><br/>${x.category} · ${x.date?.slice(0, 10)}<br/><a href="${x.url}" target="_blank">NASA EONET source ↗</a>`).addTo(g));
-    g.addTo(map); layers.current.global = g;
+    if (show.quakes) global.data?.quakes.forEach((x: any) => L.marker([x.lat, x.lon], { icon: icon("#ff8a3d", Math.min(22, 6 + x.mag * 2), x.mag >= 6) }).bindPopup(`<b>M${x.mag} earthquake</b><br/>${x.place}<br/>${new Date(x.time).toUTCString()}<br/><a href="${x.url}" target="_blank">USGS ↗</a>`).addTo(g));
+    if (show.events) global.data?.events.forEach((x: any) => L.marker([x.lat, x.lon], { icon: icon(/fire/i.test(x.category) ? "#ff4d6d" : /storm/i.test(x.category) ? "#4dd8ff" : /volcan/i.test(x.category) ? "#ffb703" : "#c77dff", 10, true) }).bindPopup(`<b>${x.title}</b><br/>${x.category} · ${x.date?.slice(0, 10)}<br/><a href="${x.url}" target="_blank">NASA EONET source ↗</a>`).addTo(g));
+    g.addTo(map); layers.current["global"] = g;
   }, [global.data, show.quakes, show.events]);
 
   useEffect(() => {
     const L = Lref.current, map = mapRef.current; if (!L || !map) return;
-    layers.current.point?.remove();
+    layers.current["point"]?.remove();
     if (!point) return;
     const g = L.layerGroup();
     const a = assess.data;
     a?.hazards.filter((h) => h.radiusKm > 0).forEach((h) => L.circle([point.lat, point.lon], { radius: h.radiusKm * 1000, color: LCOL[h.level], weight: 1, fillOpacity: 0.06, dashArray: "4 6" }).addTo(g));
     if (show.fires) a?.fires.points.forEach((f) => L.circleMarker([f.lat, f.lon], { radius: 3, color: "#ff4d6d", weight: 0, fillOpacity: 0.9 }).bindPopup(`VIIRS hotspot · FRP ${f.frp} MW · ${f.date}`).addTo(g));
     L.marker([point.lat, point.lon], { icon: icon(a ? LCOL[a.overall] : "#ec408c", 18, true) }).addTo(g);
-    if (show.safe) safe.data?.zones.forEach((z) => L.marker([z.lat, z.lon], { icon: icon("#2ec27e", 12) }).bindPopup(`<b>${z.name}</b><br/>${z.kind.replace("_", " ")} · ${z.distKm} km${z.elevation != null ? ` · ${Math.round(z.elevation)} m elev.` : ""}`).addTo(g));
+    if (show.safe) safe.data?.zones.forEach((z: any) => L.marker([z.lat, z.lon], { icon: icon("#2ec27e", 12) }).bindPopup(`<b>${z.name}</b><br/>${z.kind.replace("_", " ")} · ${z.distKm} km${z.elevation != null ? ` · ${Math.round(z.elevation)} m elev.` : ""}`).addTo(g));
     if (route) L.polyline(route.coords, { color: "#4dd8ff", weight: 5, opacity: 0.9 }).addTo(g);
-    g.addTo(map); layers.current.point = g;
+    g.addTo(map); layers.current["point"] = g;
   }, [point, assess.data, safe.data, show.safe, show.fires, route]);
 
   // Expose to FOX
@@ -143,8 +143,8 @@ function MapPage() {
   const rankedSafe = useMemo(() => {
     const z = safe.data?.zones ?? []; const here = safe.data?.hereElevation ?? null;
     const floodRisk = assess.data?.hazards.find((h) => h.type === "flood" || h.type === "tsunami")?.level !== "low";
-    return z.map((x) => ({ ...x, higher: here != null && x.elevation != null ? Math.round(x.elevation - here) : null }))
-      .sort((a, b) => (floodRisk ? (b.higher ?? 0) * 0.01 : 0) + a.distKm - b.distKm - (floodRisk ? (a.higher ?? 0) * 0.01 : 0));
+    return z.map((x: any) => ({ ...x, higher: here != null && x.elevation != null ? Math.round(x.elevation - here) : null }))
+      .sort((a: any, b: any) => (floodRisk ? (b.higher ?? 0) * 0.01 : 0) + a.distKm - b.distKm - (floodRisk ? (a.higher ?? 0) * 0.01 : 0));
   }, [safe.data, assess.data]);
 
   const locate = async () => { try { const l = await requestLocation(); pick(l.lat, l.lon); } catch (e) { toast.error((e as Error).message); } };
@@ -156,7 +156,7 @@ function MapPage() {
   const goRoute = async (z: { lat: number; lon: number; name: string }) => {
     if (!point) return;
     const r = await routeFn({ data: { from: point, to: z } });
-    if (!r) return toast.error("No route found");
+    if (!r) { toast.error("No route found"); return; }
     setRoute(r); mapRef.current?.fitBounds(r.coords, { padding: [30, 30] });
     toast.success(`${z.name}: ${r.distanceKm} km · ~${r.walkMin} min walk / ${r.durationMin} min drive`);
   };
@@ -187,7 +187,7 @@ function MapPage() {
         </div>
         {suggestions.data && suggestions.data.length > 0 && q === qDeb && (
           <ul className="glass absolute inset-x-0 top-12 z-[500] overflow-hidden rounded-2xl">
-            {suggestions.data.map((p, i) => (
+            {suggestions.data.map((p: any, i: number) => (
               <li key={i}><button className="haptic w-full px-4 py-2.5 text-left text-sm hover:bg-accent" onClick={() => { const nm = `${p.name}, ${p.region}`; setQ(nm); setQDeb(nm); pick(p.lat, p.lon, nm); }}>
                 <b>{p.name}</b> <span className="text-xs text-muted-foreground">{p.region}</span></button></li>
             ))}
@@ -272,10 +272,10 @@ function MapPage() {
             <div className="mt-3 space-y-2">
               <Button variant="neon" className="w-full" onClick={downloadSafeMap} disabled={!!dl || !safe.data}><Download /> Download safe-zone map (offline + PDF)</Button>
               {dl && <div className="space-y-1"><Progress value={(dl.done / dl.total) * 100} /><div className="text-center font-mono text-[10px] text-muted-foreground">{dl.done}/{dl.total} tiles</div></div>}
-              {route && <div className="rounded-xl border border-cyan/50 bg-cyan/10 p-2.5 text-xs"><div className="flex items-center gap-2 font-semibold text-cyan"><Navigation className="h-3.5 w-3.5" />{route.distanceKm} km · ~{route.walkMin} min walk · {route.durationMin} min drive</div><ol className="mt-1 list-decimal space-y-0.5 pl-4 text-muted-foreground">{route.steps.slice(0, 6).map((x, i) => <li key={i}>{x}</li>)}</ol><div className="mt-1 text-[10px] text-muted-foreground">{route.source}</div></div>}
+              {route && <div className="rounded-xl border border-cyan/50 bg-cyan/10 p-2.5 text-xs"><div className="flex items-center gap-2 font-semibold text-cyan"><Navigation className="h-3.5 w-3.5" />{route.distanceKm} km · ~{route.walkMin} min walk · {route.durationMin} min drive</div><ol className="mt-1 list-decimal space-y-0.5 pl-4 text-muted-foreground">{route.steps.slice(0, 6).map((x: string, i: number) => <li key={i}>{x}</li>)}</ol><div className="mt-1 text-[10px] text-muted-foreground">{route.source}</div></div>}
               {safe.isLoading && <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Finding hospitals, shelters, assembly points…</div>}
               {safe.data?.error && <p className="text-xs text-med">{safe.data.error}</p>}
-              {rankedSafe.slice(0, 12).map((z) => (
+              {rankedSafe.slice(0, 12).map((z: any) => (
                 <div key={z.id} className="flex items-center gap-3 rounded-xl border bg-surface/50 p-2.5">
                   <span className="grid h-8 w-8 place-items-center rounded-lg border border-low/50 text-low"><ShieldCheck className="h-3.5 w-3.5" /></span>
                   <div className="min-w-0 flex-1"><div className="truncate text-sm font-semibold">{z.name}</div><div className="text-[11px] text-muted-foreground">{z.kind.replace("_", " ")} · {z.distKm} km{z.higher != null && ` · ${z.higher >= 0 ? "+" : ""}${z.higher} m vs you`}</div></div>

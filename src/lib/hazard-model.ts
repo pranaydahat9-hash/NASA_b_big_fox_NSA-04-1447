@@ -112,9 +112,10 @@ export function linearTrend(xs: number[], ys: number[]) {
   const my = ys.reduce((a, b) => a + b, 0) / n;
   let sxy = 0, sxx = 0, syy = 0;
   for (let i = 0; i < n; i++) {
-    sxy += (xs[i] - mx) * (ys[i] - my);
-    sxx += (xs[i] - mx) ** 2;
-    syy += (ys[i] - my) ** 2;
+    const x = xs[i]!, y = ys[i]!;
+    sxy += (x - mx) * (y - my);
+    sxx += (x - mx) ** 2;
+    syy += (y - my) ** 2;
   }
   const slope = sxy / sxx;
   const intercept = my - slope * mx;
