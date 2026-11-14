@@ -1,4 +1,10 @@
 # Existing-app upgrade
+## Help without internet
+- [x] Add a no-sign-in emergency kit with device SMS/calls, explicit offline-contact consent, GPS and local sound/visible signals.
+- [x] Cache only the public emergency kit and assets using preview-safe PWA support; previews have zero worker registrations.
+- [x] Verify offline reload in an isolated production-worker simulation, SMS drafts containing GPS, contact removal, sound stop and HELP signal on mobile/desktop; 21 focused tests pass.
+- [ ] Verify offline reopening on the published URL after this release is published; the current published version does not contain the kit yet. Phone carrier SMS/call delivery and speaker range cannot be verified in a browser test.
+
 ## Emergency options, news and drills
 - [x] Add India emergency-service choices and direct SOS access.
 - [x] Run red-alert drills with an alarm and explicit optional contact-message confirmation.
@@ -18,5 +24,5 @@
 ## Verification limits
 - Browser microphone and speech output require a compatible browser and permission; physical voice recognition was not exercised.
 - Incident confirmations remain private owner observations, not independently verified reports.
-- Saved guidance works while the app remains open offline; a fresh offline launch is not supported.
+- Public emergency kit supports offline reopening after preparation on the published app; authenticated app screens still need internet. Editor previews intentionally do not cache an app shell.
 - FOX natural-language AI explanations were not independently tested; deterministic actions and source context were verified.

@@ -37,3 +37,5 @@ use the editor.
 - Keep incident confirmations private and explicitly distinguish owner observations from independent verification.
 - Drill contact messages use the SOS owner-scoped delivery history but must carry a server-generated DRILL prefix and never claim an actual emergency; practice alerts never automatically send SMS.
 - Fetch news from a fixed NASA feed server-side, validate source links, and display publication dates so news is not mistaken for a local emergency warning.
+- Offline emergency help is a public self-contained kit, with contacts saved only by explicit consent; never cache authenticated responses or imply radio/mesh delivery from a browser.
+- Generate the app-shell worker with vite-plugin-pwa and register only through one preview-guarded wrapper; cache public help, not private navigations, and use NetworkFirst navigation fallback.

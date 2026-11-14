@@ -38,7 +38,7 @@ export function AppShell() {
           <span className={cn("flex items-center gap-1 rounded-full border px-2 py-0.5", online ? "text-low" : "text-med")}>
             <span className={cn("h-1.5 w-1.5 rounded-full", online ? "bg-low animate-flicker" : "bg-med")} />{online ? "LIVE" : "OFFLINE"}
           </span>
-          <Link to="/offline" className="rounded-full border px-2 py-0.5 text-muted-foreground hover:text-foreground">{t("offline", s.language)}</Link>
+          <a href="/emergency-kit.html" className="rounded-full border px-2 py-0.5 text-muted-foreground hover:text-foreground">Offline help</a>
         </div>
       </header>
       <main key={loc.pathname} className="px-3 pt-3 sm:px-5">

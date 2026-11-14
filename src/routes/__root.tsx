@@ -7,6 +7,7 @@ import { SettingsProvider } from "@/lib/settings";
 import { Toaster } from "@/components/ui/sonner";
 import { FoxAgent } from "@/components/fox/FoxAgent";
 import { supabase } from "@/integrations/supabase/client";
+import { registerOfflineHelp } from '@/lib/pwa';
 
 function NotFoundComponent() {
   return (
@@ -60,6 +61,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap" },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
       { rel: "apple-touch-icon", type: "image/png", href: "/apple-touch-icon.png" },
+      { rel: 'manifest', href: '/manifest.webmanifest' },
     ],
   }),
   shellComponent: RootShell,
@@ -80,6 +82,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
+  useEffect(() => { registerOfflineHelp().catch(() => {}); }, []);
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;

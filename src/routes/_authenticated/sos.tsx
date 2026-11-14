@@ -73,6 +73,7 @@ function SosPage() {
   return (
     <div className="space-y-4">
       <Panel title="Emergency services · India" icon={<Phone className="h-4 w-4 text-high" />}>
+        <Button asChild variant="outline" className="mb-3 w-full"><a href="/emergency-kit.html">No internet? Open offline help</a></Button>
         <div className="grid grid-cols-3 gap-2">{EMERGENCY_SERVICES.map((service, i) => {
           const Icon = [Ambulance, Shield, Flame][i] ?? Phone;
           return <Button asChild key={service.name} variant="outline" className="h-auto flex-col gap-1 px-1 py-3 text-xs"><a href={`tel:${service.number}`}><Icon className="h-5 w-5 text-high" />{service.name}<span className="text-muted-foreground">{service.number}</span></a></Button>;

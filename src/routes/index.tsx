@@ -9,6 +9,7 @@ export const Route = createFileRoute("/")({
       <h1 className="text-4xl font-bold">Prevention beats <span className="text-gradient">response</span>.</h1>
       <p className="max-w-sm text-sm text-muted-foreground">Live NASA, USGS and weather data turned into area-by-area disaster predictions, safe zones and one-tap SOS.</p>
       <Button asChild variant="neon" className="h-12 px-8"><Link to="/auth">Get started</Link></Button>
+      <Button asChild variant="outline"><a href="/emergency-kit.html">Emergency help · no sign-in</a></Button>
     </div>
   ),
 });

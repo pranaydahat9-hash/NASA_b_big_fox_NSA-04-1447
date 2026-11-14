@@ -5,6 +5,8 @@ import { listAreas, deleteOfflineArea, listReports, TILE_CACHE, type OfflineArea
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Panel, ago } from "@/components/app/bits";
+import { supabase } from '@/integrations/supabase/client';
+import { OFFLINE_HELP_CONTACTS, validateHelpContacts } from '@/lib/offline-help-policy';
 
 export const Route = createFileRoute("/_authenticated/offline")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Offline maps & emergency info — FOX" }, { name: "description", content: "Downloaded maps, safe zones, saved reports and emergency guidance that work without internet." }, { property: "og:title", content: "Offline — FOX" }, { property: "og:description", content: "Maps, safe zones and emergency info that work without internet." }] }),
@@ -25,6 +27,7 @@ function Offline() {
   const [areas, setAreas] = useState<OfflineArea[]>([]);
   const [reports, setReports] = useState<SavedReport[]>([]);
   const [online, setOnline] = useState(true);
+  const [contactStatus, setContactStatus] = useState('');
   const [storage, setStorage] = useState<{usage?:number;quota?:number}>({});
   useEffect(() => {
     navigator.storage?.estimate().then(setStorage).catch(()=>{});
@@ -34,10 +37,26 @@ function Offline() {
     return () => { window.removeEventListener("online", h); window.removeEventListener("offline", h); };
   }, []);
   const drop = async (a: OfflineArea) => { try { await deleteOfflineArea(a.id); setAreas(listAreas()); setStorage(await navigator.storage.estimate()); } catch { toast.error("Could not remove cached area"); } };
+  const saveContacts = async () => {
+    try {
+      const { data, error } = await supabase.from('emergency_contacts').select('name, phone'); if (error) throw error;
+      const contacts = validateHelpContacts(data ?? []);
+      localStorage.setItem(OFFLINE_HELP_CONTACTS, JSON.stringify({ savedAt: new Date().toISOString(), contacts }));
+      setContactStatus(`${contacts.length} contacts saved on this device.`);
+    } catch { toast.error('Could not save contacts. Connect to the internet and try again.'); }
+  };
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted-foreground">Device storage: {((storage.usage ?? 0)/1048576).toFixed(1)} MB used{storage.quota ? ` / ${(storage.quota/1048576).toFixed(0)} MB available` : ""}. Saved guidance can be read while this app remains open offline; a first launch still needs internet.</p>
+      <Panel title="Help without internet" icon={<LifeBuoy className="h-4 w-4 text-high" />}>
+        <Button asChild variant="danger" className="w-full"><a href="/emergency-kit.html">Open offline emergency kit</a></Button>
+        <p className="mt-2 text-xs text-muted-foreground">Calls and SMS need mobile signal, not internet. Without any signal, use the phone’s local distress sound and visible HELP signal to attract nearby people. FOX cannot discover or message nearby phones without a network.</p>
+        <p className="mt-2 text-xs text-muted-foreground">Save your contacts below only on a trusted device. Anyone using this device can see the offline copy, even when signed out. Remove it in the emergency kit when no longer needed.</p>
+        <Button variant="outline" className="mt-3 w-full" disabled={!online} onClick={saveContacts}>Save emergency contacts on this device</Button>
+        {contactStatus && <p role="status" className="mt-2 text-xs text-low">{contactStatus}</p>}
+        <p className="mt-2 text-[11px] text-muted-foreground">Offline reopening works only after opening the published app online once. Offline launch is disabled in the editor preview.</p>
+      </Panel>
+      <p className="text-xs text-muted-foreground">Device storage: {((storage.usage ?? 0)/1048576).toFixed(1)} MB used{storage.quota ? ` / ${(storage.quota/1048576).toFixed(0)} MB available` : ""}.</p>
       {!online && <div className="flex items-center gap-2 rounded-xl border border-med/60 bg-med/10 p-3 text-sm text-med"><WifiOff className="h-4 w-4" />You're offline — showing saved data.</div>}
       <Panel title="Downloaded map areas" icon={<Download className="h-4 w-4 text-primary" />}>
         {areas.length === 0 ? <p className="text-xs text-muted-foreground">None yet. On the <Link to="/map" className="text-primary underline">map</Link>, pick a place and tap Download to save it with its safe zones.</p> : (
