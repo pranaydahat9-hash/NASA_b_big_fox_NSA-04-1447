@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { FileDown, Eye, Trash2, Loader2, Target, History, Megaphone, ExternalLink, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { assessArea, getPastWeek, getSafeZones, reverseGeocode } from "@/lib/hazards.functions";
+import { assessArea, getClimateTrend, getPastWeek, getSafeZones, reverseGeocode } from "@/lib/hazards.functions";
 import { buildReportPdf } from "@/lib/pdf";
 import { saveReport, listReports, deleteReport, type SavedReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,7 +35,7 @@ function Reports() {
   const search = Route.useSearch();
   const qc = useQueryClient();
   const { loc, button } = useHere();
-  const assessFn = useServerFn(assessArea), zonesFn = useServerFn(getSafeZones), revFn = useServerFn(reverseGeocode), weekFn = useServerFn(getPastWeek);
+  const trendFn = useServerFn(getClimateTrend), assessFn = useServerFn(assessArea), zonesFn = useServerFn(getSafeZones), revFn = useServerFn(reverseGeocode), weekFn = useServerFn(getPastWeek);
   const [making, setMaking] = useState(false);
   const [saved, setSaved] = useState<SavedReport[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
@@ -56,9 +56,9 @@ function Reports() {
     const lat = search.lat ?? loc?.lat ?? 19.076, lon = search.lon ?? loc?.lon ?? 72.8777;
     setMaking(true); haptic("tap");
     try {
-      const [a, z, r] = await Promise.all([assessFn({ data: { lat, lon } }), zonesFn({ data: { lat, lon } }).catch(() => null), search.name ? Promise.resolve({ name: search.name, region: "" }) : revFn({ data: { lat, lon } }).catch(() => ({ name: null, region: "" }))]);
+      const [a, z, r, tr] = await Promise.all([assessFn({ data: { lat, lon } }), zonesFn({ data: { lat, lon } }).catch(() => null), search.name ? Promise.resolve({ name: search.name, region: "" }) : revFn({ data: { lat, lon } }).catch(() => ({ name: null, region: "" })), trendFn({ data: { lat, lon, start: 1991 } }).catch(() => null)]);
       const place = [r.name, r.region].filter(Boolean).join(", ") || `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
-      const blob = await buildReportPdf(a, place, (z?.zones ?? []).slice(0, 10));
+      const blob = await buildReportPdf(a, place, (z?.zones ?? []).slice(0, 10), tr);
       const item: SavedReport = { id: crypto.randomUUID(), title: `Hazard report — ${place}`, place, createdAt: new Date().toISOString(), level: a.overall, blob };
       await saveReport(item); await refresh(); haptic("success");
       setPreview(URL.createObjectURL(blob));
