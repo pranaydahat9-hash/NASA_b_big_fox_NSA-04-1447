@@ -27,7 +27,7 @@ export function tilesForArea(lat: number, lon: number, radiusKm: number, zooms: 
 }
 
 export async function downloadArea(style: BaseStyle, lat: number, lon: number, radiusKm: number, onProgress: (done: number, total: number) => void) {
-  if (style === "light") throw new Error("The standard OpenStreetMap tile service does not permit bulk offline downloads. Switch to Dark blue for Esri map downloads; safe-zone PDFs remain available.");
+  if (style === "light") throw new Error("The standard OpenStreetMap tile service does not permit bulk offline downloads. PDF downloads are separate and available in every theme.");
   const cache = await caches.open(TILE_CACHE);
   const tiles = tilesForArea(lat, lon, radiusKm, [10, 11, 12, 13, 14, 15]);
   let done = 0, failed = 0;
@@ -36,7 +36,7 @@ export async function downloadArea(style: BaseStyle, lat: number, lon: number, r
     while (queue.length) {
       const t = queue.shift(); if (!t) break;
       const url = tileUrl(style, t.z, t.x, t.y);
-      try { if (!(await cache.match(url))) { const r = await fetch(url, { mode: "cors" }); if (!r.ok) throw new Error("Tile unavailable"); await cache.put(url, r); } } catch { failed++; }
+      try { if (!(await cache.match(url))) { const r = await fetch(url, { mode: "cors", signal: AbortSignal.timeout(10000) }); if (!r.ok) throw new Error("Tile unavailable"); await cache.put(url, r); } } catch { failed++; }
       onProgress(++done, tiles.length);
     }
   };

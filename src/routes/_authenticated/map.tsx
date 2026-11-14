@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Search, Crosshair, Layers, ShieldCheck, Navigation, Download, Bookmark, ChevronDown, Loader2, FileDown, Hospital, Flame, Activity, Satellite } from "lucide-react";
+import { Search, Crosshair, Layers, ShieldCheck, Navigation, Download, Bookmark, ChevronDown, Loader2, FileDown, Hospital, Flame, Activity, Satellite, RefreshCw, ExternalLink } from "lucide-react";
 import { searchPlaces, reverseGeocode, getGlobalEvents, getSafeZones, getRoute } from "@/lib/hazards.functions";
 import { useAssessment } from "@/lib/use-assessment";
 import { requestLocation, getLastLocation } from "@/lib/location";
@@ -11,6 +11,8 @@ import { t } from "@/lib/i18n";
 import { setFoxContext } from "@/lib/fox-bus";
 import { downloadArea, saveArea, cachedTileBlobUrl, TILE_PROVIDERS, type BaseStyle } from "@/lib/offline";
 import { buildReportPdf } from "@/lib/pdf";
+import { deliverFile } from "@/lib/file-download";
+import { mapDownloadOptions } from "@/lib/map-download-policy";
 import { saveReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
 import { HAZ_NAME, HazardGlyph, LevelBadge, SourceList, Stat, ago, levelText } from "@/components/app/bits";
@@ -51,22 +53,33 @@ function MapPage() {
   const [openHaz, setOpenHaz] = useState<string | null>(null);
   const [route, setRoute] = useState<Awaited<ReturnType<typeof getRoute>> | null>(null);
   const [dl, setDl] = useState<{ done: number; total: number } | null>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [readyPdf, setReadyPdf] = useState<{ blob: Blob; filename: string } | null>(null);
+  const [systemDark, setSystemDark] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const searchFn = useServerFn(searchPlaces);
   const revFn = useServerFn(reverseGeocode);
   const safeFn = useServerFn(getSafeZones);
   const routeFn = useServerFn(getRoute);
-  const style: BaseStyle = s.theme === "abyss" ? "dark" : "light";
+  const downloadOptions = mapDownloadOptions(s.theme, systemDark);
+  const style: BaseStyle = downloadOptions.style;
+  useEffect(() => {
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const update = () => setSystemDark(media.matches);
+    update(); media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => { const id = setTimeout(() => setQDeb(q), 300); return () => clearTimeout(id); }, [q]);
   const suggestions = useQuery({ queryKey: ["places", qDeb], enabled: qDeb.length >= 2 && qDeb !== point?.name, queryFn: () => searchFn({ data: { q: qDeb } }) });
   const global = useQuery({ queryKey: ["global"], queryFn: () => getGlobalEvents(), staleTime: 10 * 60e3 });
   const assess = useAssessment(point?.lat, point?.lon);
-  const safe = useQuery({ queryKey: ["safe", point?.lat?.toFixed(3), point?.lon?.toFixed(3)], enabled: !!point && (show.safe || sheet === "safe"), queryFn: () => safeFn({ data: { lat: point!.lat, lon: point!.lon } }), staleTime: 30 * 60e3 });
+  const safe = useQuery({ queryKey: ["safe", point?.lat?.toFixed(3), point?.lon?.toFixed(3)], enabled: !!point && (show.safe || sheet === "safe"), queryFn: () => { if (!point) throw new Error("Select a place first"); return safeFn({ data: point }); }, staleTime: 30 * 60e3 });
 
   const pick = async (lat: number, lon: number, name?: string) => {
-    setPoint({ lat, lon, name }); setRoute(null); setOpenHaz(null);
+    setPoint({ lat, lon, name }); setRoute(null); setOpenHaz(null); setReadyPdf(null);
     mapRef.current?.flyTo([lat, lon], Math.max(mapRef.current.getZoom(), 10), { duration: 0.8 });
-    if (!name) revFn({ data: { lat, lon } }).then((r) => r.name && setPoint((p) => (p && p.lat === lat ? { ...p, name: r.name! + (r.region ? `, ${r.region}` : "") } : p))).catch(() => {});
+    if (!name) revFn({ data: { lat, lon } }).then((r) => { const name = r.name; if (name) setPoint((p) => (p && p.lat === lat && p.lon === lon ? { ...p, name: name + (r.region ? `, ${r.region}` : "") } : p)); }).catch(() => {});
   };
 
   // Init map
@@ -76,7 +89,8 @@ function MapPage() {
       const L = (await import("leaflet")).default;
       if (cancelled || !mapEl.current || mapRef.current) return;
       Lref.current = L;
-      const start = search.lat != null && search.lon != null ? [search.lat, search.lon] : getLastLocation() ? [getLastLocation()!.lat, getLastLocation()!.lon] : [19.076, 72.8777];
+      const last = getLastLocation();
+      const start = search.lat != null && search.lon != null ? [search.lat, search.lon] : last ? [last.lat, last.lon] : [19.076, 72.8777];
       const map = L.map(mapEl.current, { zoomControl: false, attributionControl: true, worldCopyJump: true }).setView(start as any, 9);
       const Cached = L.TileLayer.extend({
         createTile(coords: any, done: any) {
@@ -89,7 +103,7 @@ function MapPage() {
       layers.current["base"] = new (Cached as any)(TILE_PROVIDERS[style].url, { maxZoom: 18, attribution: TILE_PROVIDERS[style].attribution }).addTo(map);
       L.control.zoom({ position: "topright" }).addTo(map);
       map.on("click", (e: any) => pick(e.latlng.lat, e.latlng.lng));
-      mapRef.current = map;
+      mapRef.current = map; setMapReady(true);
       if (search.lat != null && search.lon != null) pick(search.lat, search.lon);
       else if (!search.q) { const l = getLastLocation(); if (l) pick(l.lat, l.lon); else pick(19.076, 72.8777, "Mumbai, Maharashtra, India"); }
     })();
@@ -107,7 +121,7 @@ function MapPage() {
   useEffect(() => { if (search.lat != null && search.lon != null && mapRef.current) pick(search.lat, search.lon); if (search.safe) { setShow((x) => ({ ...x, safe: true })); setSheet("safe"); } /* eslint-disable-next-line */ }, [search.lat, search.lon, search.safe]);
 
   // Base style switch
-  useEffect(() => { layers.current["base"]?.setUrl(TILE_PROVIDERS[style].url); }, [style]);
+  useEffect(() => { layers.current["base"]?.setUrl(TILE_PROVIDERS[style].url); }, [style, mapReady]);
 
   // Overlays
   const icon = (color: string, size = 12, pulse = false) => Lref.current?.divIcon({ className: "fox-pin", iconSize: [size, size], html: `${pulse ? `<span class="ring" style="background:${color}"></span>` : ""}<span class="dot" style="background:${color};box-shadow:0 0 8px ${color}"></span>` });
@@ -118,7 +132,7 @@ function MapPage() {
     if (show.quakes) global.data?.quakes.forEach((x: any) => L.marker([x.lat, x.lon], { icon: icon("#ff8a3d", Math.min(22, 6 + x.mag * 2), x.mag >= 6) }).bindPopup(`<b>M${x.mag} earthquake</b><br/>${x.place}<br/>${new Date(x.time).toUTCString()}<br/><a href="${x.url}" target="_blank">USGS ↗</a>`).addTo(g));
     if (show.events) global.data?.events.forEach((x: any) => L.marker([x.lat, x.lon], { icon: icon(/fire/i.test(x.category) ? "#ff4d6d" : /storm/i.test(x.category) ? "#4dd8ff" : /volcan/i.test(x.category) ? "#ffb703" : "#c77dff", 10, true) }).bindPopup(`<b>${x.title}</b><br/>${x.category} · ${x.date?.slice(0, 10)}<br/><a href="${x.url}" target="_blank">NASA EONET source ↗</a>`).addTo(g));
     g.addTo(map); layers.current["global"] = g;
-  }, [global.data, show.quakes, show.events]);
+  }, [global.data, show.quakes, show.events, mapReady]);
 
   useEffect(() => {
     const L = Lref.current, map = mapRef.current; if (!L || !map) return;
@@ -132,7 +146,7 @@ function MapPage() {
     if (show.safe) safe.data?.zones.forEach((z: any) => L.marker([z.lat, z.lon], { icon: icon("#2ec27e", 12) }).bindPopup(`<b>${z.name}</b><br/>${z.kind.replace("_", " ")} · ${z.distKm} km${z.elevation != null ? ` · ${Math.round(z.elevation)} m elev.` : ""}`).addTo(g));
     if (route) L.polyline(route.coords, { color: "#4dd8ff", weight: 5, opacity: 0.9 }).addTo(g);
     g.addTo(map); layers.current["point"] = g;
-  }, [point, assess.data, safe.data, show.safe, show.fires, route]);
+  }, [point, assess.data, safe.data, show.safe, show.fires, route, mapReady]);
 
   // Expose to FOX
   useEffect(() => {
@@ -167,14 +181,23 @@ function MapPage() {
     try {
       const n = await downloadArea(style, point.lat, point.lon, 4, (done, total) => setDl({ done, total }));
       saveArea({ id: `${point.lat.toFixed(3)},${point.lon.toFixed(3)}`, name: point.name ?? "Area", lat: point.lat, lon: point.lon, radiusKm: 4, tiles: n, style, savedAt: new Date().toISOString(), zones: rankedSafe.slice(0, 30) });
-      if (assess.data) {
-        const blob = await buildReportPdf(assess.data, point.name ?? "Selected area", rankedSafe);
-        await saveReport({ id: crypto.randomUUID(), title: `Safe-zone map · ${point.name ?? ""}`, place: point.name ?? "", createdAt: new Date().toISOString(), level: assess.data.overall, blob });
-        const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `FOX-safe-zones-${(point.name ?? "area").split(",")[0]}.pdf`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 30000);
-      }
       toast.success(`Saved offline: ${n} map tiles + ${rankedSafe.length} safe zones`);
     } catch (e) { toast.error("Download failed: " + (e as Error).message); }
     setDl(null);
+  };
+
+  const preparePdf = async () => {
+    if (!point || !assess.data) return;
+    setPdfBusy(true); setReadyPdf(null);
+    try {
+      const blob = await buildReportPdf(assess.data, point.name ?? "Selected area", rankedSafe);
+      setReadyPdf({ blob, filename: `FOX-safe-zones-${(point.name ?? "area").split(",")[0]}.pdf` });
+      try {
+        await saveReport({ id: crypto.randomUUID(), title: `Safe-zone map · ${point.name ?? ""}`, place: point.name ?? "", createdAt: new Date().toISOString(), level: assess.data.overall, blob });
+        toast.success("PDF ready and saved for offline use");
+      } catch { toast.warning("PDF ready; device storage could not save an offline copy"); }
+    } catch (error) { toast.error("Could not prepare PDF: " + (error as Error).message); }
+    finally { setPdfBusy(false); }
   };
 
   const a = assess.data;
@@ -206,10 +229,20 @@ function MapPage() {
           ))}
         </div>
         <div className="pointer-events-none absolute bottom-2 left-2 z-[400] rounded-lg bg-background/70 px-2 py-1 font-mono text-[9px] text-muted-foreground backdrop-blur">
-          <Layers className="mr-1 inline h-3 w-3" />{global.data ? `${global.data.quakes.length} quakes · ${global.data.events.length} NASA events · ${ago(global.data.fetchedAt)}` : "loading layers…"}
+          <Layers className="mr-1 inline h-3 w-3" />{global.data ? `${global.data.availability.usgs ? `${global.data.quakes.length} quakes` : "USGS unavailable"} · ${global.data.availability.eonet ? `${global.data.events.length} NASA events` : "NASA unavailable"} · ${ago(global.data.fetchedAt)}` : global.isError ? "Map feeds unavailable" : "loading layers…"}
         </div>
       </div>
 
+      <section className="space-y-2 border-b pb-3" aria-label="Map data sources">
+        <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">Map data connections</h2><Button size="sm" variant="ghost" disabled={global.isFetching || assess.isFetching || safe.isFetching} onClick={() => { void global.refetch(); if (point) void assess.refetch(); if (point && (show.safe || sheet === "safe")) void safe.refetch(); }}><RefreshCw className={cn("h-4 w-4", global.isFetching && "animate-spin")} />Refresh</Button></div>
+        <div className="grid gap-2 text-xs sm:grid-cols-2">
+          <a className="flex items-center justify-between gap-2 text-primary" href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php" target="_blank" rel="noreferrer">USGS earthquakes <span className="text-muted-foreground">{global.data ? global.data.availability.usgs ? "Updated" : "Unavailable" : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
+          <a className="flex items-center justify-between gap-2 text-primary" href="https://eonet.gsfc.nasa.gov/" target="_blank" rel="noreferrer">NASA EONET <span className="text-muted-foreground">{global.data ? global.data.availability.eonet ? "Updated" : "Unavailable" : global.isError ? "Unavailable" : "Connecting"} <ExternalLink className="inline h-3 w-3" /></span></a>
+          <a className="text-primary" href="https://open-meteo.com/" target="_blank" rel="noreferrer">Weather / river / marine — Open-Meteo <ExternalLink className="inline h-3 w-3" /></a>
+          <a className="text-primary" href="https://wiki.openstreetmap.org/wiki/Overpass_API" target="_blank" rel="noreferrer">Safe zones — OpenStreetMap Overpass <ExternalLink className="inline h-3 w-3" /></a>
+        </div>
+        <p className="text-xs text-muted-foreground">NASA FIRMS: {a ? a.fires.configured ? "Satellite response available" : a.unavailable.find(x => x.includes("FIRMS")) ?? "Unavailable" : "Checking satellite coverage"}. Other map feeds do not require an API key.</p>
+      </section>
       {a && <FireGraph assessment={a} />}
       {point && (
         <div className="glass rounded-2xl p-4 animate-float-up">
@@ -272,7 +305,10 @@ function MapPage() {
 
           {sheet === "safe" && (
             <div className="mt-3 space-y-2">
-              <Button variant="neon" className="w-full" onClick={downloadSafeMap} disabled={!!dl || !safe.data}><Download /> Download safe-zone map (offline + PDF)</Button>
+              <Button variant="neon" className="w-full" onClick={preparePdf} disabled={pdfBusy || !a || safe.isFetching}><FileDown />{pdfBusy ? "Preparing PDF…" : "Prepare safe-zone PDF"}</Button>
+              {readyPdf && <Button className="w-full" onClick={() => void deliverFile(readyPdf.blob, readyPdf.filename).catch(() => toast.error("Could not download PDF"))}><Download />Download safe-zone PDF</Button>}
+              <Button variant="outline" className="w-full" onClick={downloadSafeMap} disabled={!!dl || !safe.data || !downloadOptions.tilesAllowed}><Download />Save offline map tiles</Button>
+              {!downloadOptions.tilesAllowed && <p className="text-xs text-muted-foreground">PDFs are available in this theme. Standard OpenStreetMap does not permit bulk offline tiles; dark-map tile downloads remain separate.</p>}
               {dl && <div className="space-y-1"><Progress value={(dl.done / dl.total) * 100} /><div className="text-center font-mono text-[10px] text-muted-foreground">{dl.done}/{dl.total} tiles</div></div>}
               {route && <div className="rounded-xl border border-cyan/50 bg-cyan/10 p-2.5 text-xs"><div className="flex items-center gap-2 font-semibold text-cyan"><Navigation className="h-3.5 w-3.5" />{route.distanceKm} km · ~{route.walkMin} min walk · {route.durationMin} min drive</div><ol className="mt-1 list-decimal space-y-0.5 pl-4 text-muted-foreground">{route.steps.slice(0, 6).map((x: string, i: number) => <li key={i}>{x}</li>)}</ol><div className="mt-1 text-[10px] text-muted-foreground">{route.source}</div></div>}
               {safe.isLoading && <div className="flex items-center gap-2 py-4 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Finding hospitals, shelters, assembly points…</div>}

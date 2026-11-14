@@ -1,5 +1,5 @@
 import type { Assessment } from "./hazards.functions";
-import { lonLatToTile, tileUrl } from "./offline";
+import { tileUrl } from "./offline";
 
 type RGB = [number, number, number];
 const LV: Record<string, RGB> = { low: [34, 170, 90], medium: [220, 170, 20], high: [220, 50, 50] };
@@ -38,7 +38,8 @@ async function mapImage(lat: number, lon: number, zones: { lat: number; lon: num
   try {
     const W = 3, H = 2, c = document.createElement("canvas");
     c.width = W * 256; c.height = H * 256;
-    const g = c.getContext("2d")!;
+    const g = c.getContext("2d");
+    if (!g) return null;
     const n = 2 ** z;
     const fx = ((lon + 180) / 360) * n;
     const r = (lat * Math.PI) / 180;
@@ -46,8 +47,13 @@ async function mapImage(lat: number, lon: number, zones: { lat: number; lon: num
     const x0 = Math.floor(fx - W / 2), y0 = Math.floor(fy - H / 2);
     await Promise.all(Array.from({ length: W * H }, async (_, i) => {
       const tx = x0 + (i % W), ty = y0 + Math.floor(i / W);
-      const img = new Image(); img.crossOrigin = "anonymous"; img.src = tileUrl("light", z, tx, ty);
-      await img.decode(); g.drawImage(img, (i % W) * 256, Math.floor(i / W) * 256);
+      const response = await fetch(tileUrl("light", z, tx, ty), { signal: AbortSignal.timeout(5000) });
+      if (!response.ok) throw new Error("Map tile unavailable");
+      const url = URL.createObjectURL(await response.blob());
+      try {
+        const img = new Image(); img.src = url;
+        await img.decode(); g.drawImage(img, (i % W) * 256, Math.floor(i / W) * 256);
+      } finally { URL.revokeObjectURL(url); }
     }));
     const px = (la: number, lo: number) => {
       const X = ((lo + 180) / 360) * n, rr = (la * Math.PI) / 180;
@@ -57,7 +63,6 @@ async function mapImage(lat: number, lon: number, zones: { lat: number; lon: num
     for (const zn of zones) { const [a, b] = px(zn.lat, zn.lon); g.fillStyle = "#22aa5a"; g.beginPath(); g.arc(a, b, 7, 0, 7); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2; g.stroke(); }
     const [a, b] = px(lat, lon);
     g.fillStyle = "#ec408c"; g.beginPath(); g.arc(a, b, 10, 0, 7); g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 3; g.stroke();
-    void lonLatToTile;
     return c.toDataURL("image/jpeg", 0.85);
   } catch { return null; }
 }
@@ -91,7 +96,7 @@ export async function buildReportPdf(a: Assessment, place: string, zones: { name
   doc.setTextColor(30, 30, 50); doc.setFontSize(12); doc.setFont("helvetica", "bold"); doc.text("Location map", 14, y); y += 3;
   const img = await mapImage(a.lat, a.lon, zones.slice(0, 15));
   if (img) { doc.addImage(img, "JPEG", 14, y, 150, 100); y += 103; doc.setFontSize(7); doc.setTextColor(110); doc.text("Basemap © OpenStreetMap contributors. Pink = assessed point, green = safe zones.", 14, y); y += 6; }
-  else { doc.setFontSize(9); doc.text("Map tiles unavailable (offline).", 14, y + 5); y += 10; }
+  else { doc.setFontSize(9); doc.text("Basemap unavailable or timed out; coordinates and data retained.", 14, y + 5); y += 10; }
 
   // Hazard bar chart
   doc.setFontSize(12); doc.setTextColor(30, 30, 50); doc.setFont("helvetica", "bold"); doc.text("Hazard scores (0–100)", 14, y); y += 4;

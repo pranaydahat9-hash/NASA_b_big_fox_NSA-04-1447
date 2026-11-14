@@ -1,4 +1,9 @@
 # Existing-app upgrade
+## Map APIs and theme-independent PDFs
+- [x] Separate safe-zone PDFs from offline map tiles; downloaded valid PDFs in dark blue, light, pink and system themes without tile downloads.
+- [x] Show existing map API sources, refresh and unavailable states; bound map-image requests to 5 seconds and external API requests to 15 seconds.
+- [x] Verify signed-in mobile downloads, desktop map rendering, no mobile overflow or runtime errors; 12 focused tests pass. PDF preparation took 0.4–1.2 seconds after area data loaded. FIRMS remains blocked by the missing MAP_KEY; safe-zone service returned a busy notice rather than invented locations.
+
 ## Nearby Community design
 - [x] Add a distinct community section and navigation without removing existing screens.
 - [x] Design nearby peers, community chat and alert drafts with explicit native-app-only connection status.

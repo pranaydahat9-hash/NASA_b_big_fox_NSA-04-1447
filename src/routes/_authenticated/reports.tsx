@@ -6,6 +6,7 @@ import { FileDown, Eye, Trash2, Loader2, Target, History, Megaphone, ExternalLin
 import { toast } from "sonner";
 import { assessArea, getClimateTrend, getPastWeek, getSafeZones, reverseGeocode } from "@/lib/hazards.functions";
 import { buildReportPdf } from "@/lib/pdf";
+import { deliverFile } from "@/lib/file-download";
 import { saveReport, listReports, deleteReport, type SavedReport } from "@/lib/offline";
 import { supabase } from "@/integrations/supabase/client";
 import { useHere } from "@/components/app/Here";
@@ -39,6 +40,8 @@ function Reports() {
   const [making, setMaking] = useState(false);
   const [saved, setSaved] = useState<SavedReport[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
+  const [latest, setLatest] = useState<SavedReport | null>(null);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
   const week = useQuery({ queryKey: ["past-week"], queryFn: () => weekFn(), staleTime: 30 * 60e3 });
   const mine = useQuery({ queryKey: ["my-reports"], queryFn: async () => (await supabase.from("community_reports").select("*").order("created_at", { ascending: false }).limit(20)).data ?? [] });
   const votes = useQuery({ queryKey: ["report-verifications"], queryFn: async () => { const {data,error}=await supabase.from("report_verifications").select("*"); if(error) throw error; return data; } });
@@ -61,13 +64,14 @@ function Reports() {
       const place = [r.name, r.region].filter(Boolean).join(", ") || `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
       const blob = await buildReportPdf(a, place, (z?.zones ?? []).slice(0, 10), tr);
       const item: SavedReport = { id: crypto.randomUUID(), title: `Hazard report — ${place}`, place, createdAt: new Date().toISOString(), level: a.overall, blob };
+      setLatest(item);
       await saveReport(item); await refresh(); haptic("success");
       setPreview(URL.createObjectURL(blob));
       toast.success("Report saved for offline use");
     } catch (e) { toast.error("Could not build report: " + (e as Error).message); }
     finally { setMaking(false); }
   }
-  const download = (r: SavedReport) => { const u = URL.createObjectURL(r.blob); const el = document.createElement("a"); el.href = u; el.download = `${r.title.replace(/[^\w]+/g, "_")}.pdf`; el.click(); };
+  const download = (r: SavedReport) => void deliverFile(r.blob, `${r.title.replace(/[^\w]+/g, "_")}.pdf`).catch(() => toast.error("Could not download PDF"));
 
   async function submitReport() {
     if (rep.description.trim().length < 10) return void toast.error("Describe what you see (at least 10 characters)");
@@ -88,6 +92,7 @@ function Reports() {
       <Panel title="PDF hazard report" icon={<FileDown className="h-4 w-4 text-primary" />} right={button}>
         <p className="text-xs text-muted-foreground">Live data from NASA, USGS, Open-Meteo & OpenStreetMap with map, charts, sources and timestamps. Unavailable sources are stated in the report.</p>
         <Button className="mt-3 w-full gap-2" onClick={make} disabled={making}>{making ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}Generate report for {search.name ?? (loc ? "my location" : "Mumbai")}</Button>
+        {latest && <Button variant="outline" className="mt-2 w-full" onClick={() => download(latest)}><FileDown />Download prepared report</Button>}
         {preview && <iframe title="Report preview" src={preview} className="mt-3 h-96 w-full rounded-xl border bg-card" />}
       </Panel>
 

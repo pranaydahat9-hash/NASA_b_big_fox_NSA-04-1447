@@ -15,7 +15,7 @@ const validLatLon = (d: LatLon) => {
 
 async function getJson<T = any>(url: string, init?: RequestInit): Promise<T | null> {
   try {
-    const r = await fetch(url, { ...init, headers: { ...UA, ...(init?.headers ?? {}) } });
+    const r = await fetch(url, { ...init, signal: init?.signal ?? AbortSignal.timeout(15000), headers: { ...UA, ...(init?.headers ?? {}) } });
     if (!r.ok) { console.error("fetch failed", r.status, url); return null; }
     return (await r.json()) as T;
   } catch (e) { console.error("fetch error", url, e); return null; }
@@ -83,7 +83,7 @@ export const assessArea = createServerFn({ method: "GET" })
 
     const [fc, fl, mr, us, eo, firmsCsv] = await Promise.all([
       getJson<any>(fcUrl), getJson<any>(flUrl), getJson<any>(mrUrl), getJson<any>(usgsUrl), getJson<any>(eoUrl),
-      firmsUrl ? fetch(firmsUrl).then((r) => (r.ok ? r.text() : null)).catch(() => null) : Promise.resolve(null),
+      firmsUrl ? fetch(firmsUrl, { signal: AbortSignal.timeout(15000) }).then((r) => (r.ok ? r.text() : null)).catch(() => null) : Promise.resolve(null),
     ]);
 
     const hazards: Hazard[] = [];
@@ -261,6 +261,7 @@ export const getGlobalEvents = createServerFn({ method: "GET" }).handler(async (
   ]);
   return {
     fetchedAt: new Date().toISOString(),
+    availability: { usgs: q != null, eonet: e != null },
     quakes: (q?.features ?? []).map((f: any) => ({ id: f.id, mag: f.properties.mag, place: f.properties.place, time: new Date(f.properties.time).toISOString(), lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0], url: f.properties.url })),
     events: (e?.events ?? []).flatMap((ev: any) => {
       const g = ev.geometry?.[ev.geometry.length - 1];
