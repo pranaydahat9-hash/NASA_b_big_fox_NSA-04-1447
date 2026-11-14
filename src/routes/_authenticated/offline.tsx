@@ -49,6 +49,7 @@ function Offline() {
   return (
     <div className="space-y-4">
       <Panel title="Help without internet" icon={<LifeBuoy className="h-4 w-4 text-high" />}>
+        <Button asChild variant="outline" className="mb-3 w-full"><Link to="/community">Nearby Community · design preview</Link></Button>
         <Button asChild variant="danger" className="w-full"><a href="/emergency-kit.html">Open offline emergency kit</a></Button>
         <p className="mt-2 text-xs text-muted-foreground">Calls and SMS need mobile signal, not internet. Without any signal, use the phone’s local distress sound and visible HELP signal to attract nearby people. FOX cannot discover or message nearby phones without a network.</p>
         <p className="mt-2 text-xs text-muted-foreground">Save your contacts below only on a trusted device. Anyone using this device can see the offline copy, even when signed out. Remove it in the emergency kit when no longer needed.</p>

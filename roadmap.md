@@ -1,4 +1,9 @@
 # Existing-app upgrade
+## Nearby Community design
+- [x] Add a distinct community section and navigation without removing existing screens.
+- [x] Design nearby peers, community chat and alert drafts with explicit native-app-only connection status.
+- [x] Verify signed-in mobile/desktop views, local draft creation/deletion and alert levels; discovery, sending and broadcasting remain disabled, without simulated peers or delivery.
+
 ## Help without internet
 - [x] Add a no-sign-in emergency kit with device SMS/calls, explicit offline-contact consent, GPS and local sound/visible signals.
 - [x] Cache only the public emergency kit and assets using preview-safe PWA support; previews have zero worker registrations.

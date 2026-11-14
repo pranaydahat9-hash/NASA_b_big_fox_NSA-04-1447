@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Map, Siren, ShieldCheck, FileText, Settings as Cog } from "lucide-react";
+import { LayoutDashboard, Map, Siren, ShieldCheck, FileText, Settings as Cog, Users } from "lucide-react";
 import { FoxMark } from "./FoxMark";
 import { AlertCenter } from "./AlertCenter";
 import { useSettings } from "@/lib/settings";
@@ -41,6 +41,7 @@ export function AppShell() {
           <a href="/emergency-kit.html" className="rounded-full border px-2 py-0.5 text-muted-foreground hover:text-foreground">Offline help</a>
         </div>
       </header>
+      <div className="flex justify-end border-b px-4 py-2"><Link to="/community" className={cn('flex items-center gap-2 text-xs font-semibold', loc.pathname === '/community' ? 'text-primary' : 'text-muted-foreground')}><Users className="h-4 w-4" />Nearby Community<span className="text-[9px] text-med">Design</span></Link></div>
       <main key={loc.pathname} className="px-3 pt-3 sm:px-5">
         <Outlet />
       </main>

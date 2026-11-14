@@ -39,3 +39,4 @@ use the editor.
 - Fetch news from a fixed NASA feed server-side, validate source links, and display publication dates so news is not mistaken for a local emergency warning.
 - Offline emergency help is a public self-contained kit, with contacts saved only by explicit consent; never cache authenticated responses or imply radio/mesh delivery from a browser.
 - Generate the app-shell worker with vite-plugin-pwa and register only through one preview-guarded wrapper; cache public help, not private navigations, and use NetworkFirst navigation fallback.
+- Nearby Community is a transport-free design preview: local drafts remain in memory, no fake peers or receipts, and radio actions stay disabled until a native transport exists.
