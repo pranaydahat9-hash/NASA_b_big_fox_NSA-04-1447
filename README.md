@@ -2,7 +2,7 @@
 ### Disaster Awareness, Risk Analysis & Preparedness
 
 **Team:** B Big Fox  
-**Challenge:** NASA Space Apps Challenge 2026  
+**Challenge:** be an earth system trend detective. 
 **Institution:** G H Raisoni Skill Tech University, Nagpur, Maharashtra, India
 
 <p align="center">
