@@ -2,7 +2,7 @@
 ### Disaster Awareness, Risk Analysis & Preparedness
 
 **Team:** B Big Fox  
-**Challenge:** be an earth system trend detective
+**Challenge:** be an earth system trend detective  
 **Institution:** G H Raisoni Skill Tech University, Nagpur, Maharashtra, India
 
 <p align="center">
