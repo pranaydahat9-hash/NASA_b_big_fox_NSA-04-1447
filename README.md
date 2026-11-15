@@ -13,6 +13,79 @@
 
 ---
 
+
+
+We want to build a satellite database disaster management app. 
+We are focusing right now on mobile, Flutter, and all that. We will show that first demo to the judge and then we will think to build the solution. It is a space challenge, a NASA space challenge.  
+Tech Stack
+
+Frontend: Jetpack Compose with Kotlin
+
+Backend: Firebase (Auth, Realtime DB, Cloud Messaging)
+
+ML/AI: TensorFlow Lite, ML Kit, Aurora AI integration
+
+APIs: OpenWeatherMap, USGS, Emergency Alert Systems
+
+Maps: Google Maps SDK with offline capabilities
+
+Database: Room Database for offline caching
+1. Weather Data Integration
+
+Real-time weather data from OpenWeatherMap API
+
+Historical weather pattern analysis
+
+Severe weather alert parsing
+
+2. AI/ML Models
+
+Flood Prediction: Random Forest model for rainfall/soil moisture analysis
+
+Wildfire Detection: CNN models for satellite imagery analysis
+
+Hurricane Tracking: Aurora AI integration for path prediction
+
+Earthquake Monitoring: USGS data integration with threshold analysis
+
+3. Alert System
+
+Push notifications via Firebase Cloud Messaging
+
+SMS integration for emergency contacts
+
+Severity-based alert prioritization
+
+False alarm reduction algorithms
+
+4. Emergency Features
+
+GPS-based evacuation route planning
+
+Offline emergency maps
+
+SOS system with location sharing
+
+Emergency contact integration
+
+5. User Interface
+
+Real-time disaster risk dashboard
+
+Interactive maps with overlay data
+
+Crowdsourced disaster reporting
+
+Multi-language support and accessibility
+https://github.com/vat72926/calculator/issues/2#issue-3139748920
+https://github.com/vat72926/calculator/issues/1#issue-3139737356
+
+This project was built with [Lovable](https://lovable.dev).
+
+**Live app**: https://horizon-hazard-halo.lovable.app
+
+Continue developing this project in the [Lovable editor] https://fox-disaster-sentinel.lovable.app
+
 # 1. Project Title & Problem Statement
 
 ## Project Title
