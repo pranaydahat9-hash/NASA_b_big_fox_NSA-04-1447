@@ -82,8 +82,8 @@ https://github.com/vat72926/calculator/issues/1#issue-3139737356
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://horizon-hazard-halo.lovable.app
-
+**Live app**: 
+(https://fox-disaster-sentinel.lovable.app)
 Continue developing this project in the [Lovable editor] https://fox-disaster-sentinel.lovable.app
 
 # 1. Project Title & Problem Statement
