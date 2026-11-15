@@ -370,7 +370,7 @@ export const getPastWeek = createServerFn({ method: "GET" }).handler(async () =>
   return {
     fetchedAt: new Date().toISOString(), quakes: checks, events,
     hitRate: valid.length ? Math.round((valid.filter((c) => c.flagged).length / valid.length) * 100) : null,
-    method: "Hindcast of FOX's seismic-cluster rule: an area is flagged 'medium' when ≥3 M2.5+ quakes occurred within 300 km in the prior 30 days. For each of the past week's strongest quakes we check whether its location was already flagged before it happened.",
+    method: "Hindcast of B fox's seismic-cluster rule: an area is flagged 'medium' when ≥3 M2.5+ quakes occurred within 300 km in the prior 30 days. For each of the past week's strongest quakes we check whether its location was already flagged before it happened.",
     sources: [{ name: "USGS M4.5+ past week", url: "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson" }, { name: "NASA EONET (7 days)", url: "https://eonet.gsfc.nasa.gov/api/v3/events?status=all&days=7" }],
   };
 });

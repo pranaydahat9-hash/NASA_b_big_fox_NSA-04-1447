@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { deliverFile } from "@/lib/file-download";
 
 export const Route = createFileRoute("/_authenticated/trends")({
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Climate trends & regional comparison — FOX" }, { name: "description", content: "Compare NASA climate trends between regions with statistical tests and automated investigation reports." }, { property: "og:title", content: "Climate trends — FOX" }, { property: "og:description", content: "NASA POWER trends compared across regions, with automated reports." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Climate trends & regional comparison — B fox" }, { name: "description", content: "Compare NASA climate trends between regions with statistical tests and automated investigation reports." }, { property: "og:title", content: "Climate trends — B fox" }, { property: "og:description", content: "NASA POWER trends compared across regions, with automated reports." }] }),
   component: Trends,
 });
 
@@ -77,7 +77,7 @@ function Trends() {
       const autoTable = (await import("jspdf-autotable")).default;
       const doc = new jsPDF({ unit: "mm", format: "a4" });
       doc.setFillColor(236, 64, 140); doc.rect(0, 0, 210, 26, "F");
-      doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text("FOX — Automated climate investigation", 12, 13);
+      doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.text("B fox — Automated climate investigation", 12, 13);
       doc.setFontSize(9); doc.text(`Generated ${new Date().toUTCString()} · Regions: ${ready.map((r) => r.p.name).join(", ")}`, 12, 20);
       doc.setTextColor(30, 30, 50);
       autoTable(doc, { startY: 32, head: [["Region", "Type", "Years", "°C/decade", "R²", "p", "Precip mm/d/dec", "Melt mo/dec"]], body: ready.map(({ p, t }) => [p.name, p.kind, `${t!.years[0]?.year}–${t!.years.at(-1)?.year}`, t!.tempPerDecade, t!.tempR2, Number(t!.tempP).toFixed(3), t!.precipPerDecade, t!.meltMonthsPerDecade]), headStyles: { fillColor: [236, 64, 140] }, styles: { fontSize: 8 } });
@@ -86,7 +86,7 @@ function Trends() {
       for (const f of [...(summary ? [{ text: summary }] : []), ...findings]) { const lines = doc.splitTextToSize("• " + f.text, 186); if (y + lines.length * 4.5 > 280) { doc.addPage(); y = 15; } doc.text(lines, 12, y); y += lines.length * 4.5 + 2; }
       y += 4; doc.setFontSize(8); doc.setTextColor(110, 110, 130);
       doc.text(doc.splitTextToSize(`Method: ordinary least-squares linear regression on NASA POWER annual means; p-values approximate (t-test on slope). Projections assume trends continue. Sources: ${ready.map((r) => r.t!.source.url).join(" ; ")}`, 186), 12, y);
-      setPreparedPdf({ blob: doc.output("blob"), filename: `FOX_climate_investigation_${new Date().toISOString().slice(0, 10)}.pdf` }); haptic("success");
+      setPreparedPdf({ blob: doc.output("blob"), filename: `B-fox_climate_investigation_${new Date().toISOString().slice(0, 10)}.pdf` }); haptic("success");
     } catch (e) { toast.error((e as Error).message); } finally { setMaking(false); }
   }
 

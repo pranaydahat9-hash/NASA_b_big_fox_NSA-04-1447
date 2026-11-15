@@ -76,7 +76,7 @@ export async function buildReportPdf(a: Assessment, place: string, zones: { name
   doc.setFillColor(...NAVY); doc.rect(0, 0, W, 34, "F");
   doc.setFillColor(...PINK); doc.rect(0, 34, W, 1.2, "F");
   doc.setTextColor(255, 255, 255); doc.setFont("helvetica", "bold"); doc.setFontSize(18);
-  doc.text("FOX Disaster Risk Report", 14, 15);
+  doc.text("B fox Disaster Risk Report", 14, 15);
   doc.setFont("helvetica", "normal"); doc.setFontSize(10);
   doc.text(`${place}  ·  ${a.lat.toFixed(4)}, ${a.lon.toFixed(4)}`, 14, 22);
   doc.text(`Generated ${new Date(a.generatedAt).toUTCString()}`, 14, 28);
@@ -188,6 +188,6 @@ export async function buildReportPdf(a: Assessment, place: string, zones: { name
   for (const n of notes) { const lines = doc.splitTextToSize(n, 182); doc.text(lines, 14, sy); sy += lines.length * 3.8 + 1.5; }
 
   const pages = doc.getNumberOfPages();
-  for (let i = 1; i <= pages; i++) { doc.setPage(i); doc.setFontSize(7); doc.setTextColor(140); doc.text(`FOX · NASA Space Apps · page ${i}/${pages}`, W / 2, 291, { align: "center" }); }
+  for (let i = 1; i <= pages; i++) { doc.setPage(i); doc.setFontSize(7); doc.setTextColor(140); doc.text(`B fox · NASA Space Apps · page ${i}/${pages}`, W / 2, 291, { align: "center" }); }
   return doc.output("blob");
 }

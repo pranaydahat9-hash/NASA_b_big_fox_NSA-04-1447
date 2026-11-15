@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
     lon: Number.isFinite(Number(s["lon"])) && s["lon"] != null ? Number(s["lon"]) : undefined,
     name: typeof s["name"] === "string" ? s["name"] : undefined,
   }),
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Reports & accuracy — FOX" }, { name: "description", content: "Download PDF disaster reports with NASA data, check last week's prediction accuracy and share community reports." }, { property: "og:title", content: "Reports & accuracy — FOX" }, { property: "og:description", content: "PDF disaster reports, prediction accuracy and community reports." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Reports & accuracy — B fox" }, { name: "description", content: "Download PDF disaster reports with NASA data, check last week's prediction accuracy and share community reports." }, { property: "og:title", content: "Reports & accuracy — B fox" }, { property: "og:description", content: "PDF disaster reports, prediction accuracy and community reports." }] }),
   component: Reports,
 });
 

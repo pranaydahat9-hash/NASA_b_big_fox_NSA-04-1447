@@ -2,12 +2,12 @@ import type { Settings } from './settings';
 export const FOX_PAGES = ['dashboard', 'map', 'sos', 'prevent', 'reports', 'settings', 'offline', 'trends'] as const;
 export const isFoxPage = (page: unknown): page is typeof FOX_PAGES[number] => FOX_PAGES.some(p => p === page);
 export function isEmergencyCommand(text: string) {
- const q = text.trim().replace(/^(hey|hi|ok)\s+fox[,!\s]*/i, '').trim();
+ const q = text.trim().replace(/^(hey|hi|ok)\s+(?:b\s+)?fox[,!\s]*/i, '').trim();
  if (/\b(how|explain|what|test|drill|cancel|stop|don't|do not)\b/i.test(q)) return false;
  return /^(help(?:\s+me)?|sos|emergency|save me)[!.\s]*$/i.test(q) || /\b(send|activate|trigger)\s+(?:an?\s+)?sos\b|\bi need help\b|bachao|मदद|बचाओ|मदत|वाचवा/i.test(q);
 }
 export function parseLocalCommand(text: string) {
- const q = text.trim().replace(/^(hey|hi|ok)\s+fox[,!\s]*/i, '');
+ const q = text.trim().replace(/^(hey|hi|ok)\s+(?:b\s+)?fox[,!\s]*/i, '');
  if (isEmergencyCommand(q)) return { name: 'trigger_sos', args: { reason: q } };
  if (/^(?:run|start|create|test) (?:a )?(?:red|high)(?:[- ]alert)? (?:drill|practice)[.!]?$/i.test(q)) return { name: 'run_drill', args: { tier: 'high' } };
  if (/^(?:open|show|go to) (?:direct sos|emergency contacts|ambulance|police|fire options?)[.!]?$/i.test(q)) return { name: 'navigate', args: { page: 'sos' } };

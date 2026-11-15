@@ -44,7 +44,7 @@ export function AlertCenter() {
     }
   }, [data, s.notifyHigh, s.notifyMedium]);
 
-  // Drills (Settings → test alerts, or FOX)
+  // Drills (Settings → test alerts, or B fox)
   useEffect(() => onFox("drill", (tier: Level) => {
     const hz: Hazard = { type: "flood", level: tier, score: tier === "high" ? 88 : 55, peakAt: new Date(Date.now() + 30 * 3.6e6).toISOString(), window: "DRILL — simulated", harm: "This is a drill to test the alert system.", relevance: "Drill", radiusKm: 10, areaKm2: 314, readings: [] };
     setActive({ tier, hazard: hz, drill: true });
@@ -59,7 +59,7 @@ export function AlertCenter() {
     if (l) safeFn({ data: { lat: l.lat, lon: l.lon } }).then((r) => {
       const best = [...r.zones].sort((a, b) => ((b.elevation ?? 0) - (a.elevation ?? 0)) * 0.002 + (a.distKm - b.distKm))[0];
       if (best) setSafe(best);
-      const text = `${active.drill ? "[DRILL] " : ""}FOX HIGH ALERT: ${HAZ_NAME[active.hazard.type]} expected ${active.hazard.window}. ${active.hazard.harm}${best ? ` Nearest safe area: ${best.name}, ${best.distKm} km — https://maps.google.com/?q=${best.lat},${best.lon}` : ""}`;
+      const text = `${active.drill ? "[DRILL] " : ""}B fox HIGH ALERT: ${HAZ_NAME[active.hazard.type]} expected ${active.hazard.window}. ${active.hazard.harm}${best ? ` Nearest safe area: ${best.name}, ${best.distKm} km — https://maps.google.com/?q=${best.lat},${best.lon}` : ""}`;
       if (automaticAlertSmsAllowed(active.drill)) smsFn({ data: { text } }).then((x) => setSms(x.reason ?? x.deliveries.map((d) => `${d.status}: ${d.detail}`).join("; ") ?? null)).catch(() => setSms("SMS failed to send"));
     }).catch(() => {});
     return () => { stopRef.current?.(); stopRef.current = null; };

@@ -18,7 +18,7 @@ import { EMERGENCY_SERVICES } from '@/lib/emergency-policy';
 import { DrillControls } from '@/components/app/DrillControls';
 
 export const Route = createFileRoute("/_authenticated/sos")({
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "SOS & family safety — FOX" }, { name: "description", content: "Send an SOS with your live location to your emergency contacts and manage family safety." }, { property: "og:title", content: "SOS & family safety — FOX" }, { property: "og:description", content: "Send an SOS with your live location to your emergency contacts." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "SOS & family safety — B fox" }, { name: "description", content: "Send an SOS with your live location to your emergency contacts and manage family safety." }, { property: "og:title", content: "SOS & family safety — B fox" }, { property: "og:description", content: "Send an SOS with your live location to your emergency contacts." }] }),
   component: SosPage,
 });
 
@@ -67,7 +67,7 @@ function SosPage() {
   const del = async (id: string) => { await supabase.from("emergency_contacts").delete().eq("id", id); qc.invalidateQueries({ queryKey: ["contacts"] }); };
 
   const phones = (contacts.data ?? []).map((c) => c.phone);
-  const fallbackMsg = res?.message ?? "SOS: I need help. Sent via FOX.";
+  const fallbackMsg = res?.message ?? "SOS: I need help. Sent via B fox.";
   const links = manualLinks(phones, fallbackMsg);
 
   return (
@@ -94,7 +94,7 @@ function SosPage() {
             <svg className="absolute inset-0 -rotate-90" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="none" stroke="currentColor" strokeWidth="4" strokeDasharray={`${hold * 2.95} 300`} /></svg>
             {busy ? <Loader2 className="h-10 w-10 animate-spin" /> : <span className="flex flex-col items-center"><Siren className="h-9 w-9 animate-jitter" /><span className="mt-1 text-lg font-bold tracking-widest">SOS</span><span className="text-[10px] opacity-80">hold 1.5 s</span></span>}
           </Button>
-          <p className="mt-3 text-center text-xs text-muted-foreground">Or say “Hey FOX, help me”. Shares your GPS location at activation with {contacts.data?.length ?? 0} contact(s).</p>
+          <p className="mt-3 text-center text-xs text-muted-foreground">Or say “Hey B fox, help me”. Shares your GPS location at activation with {contacts.data?.length ?? 0} contact(s).</p>
           {sms.data && !sms.data.configured && <p className="mt-2 rounded-lg border border-med/50 bg-med/10 p-2 text-center text-[11px] text-med">{sms.data.reason} Use the manual buttons below.</p>}
         </div>
       </Panel>

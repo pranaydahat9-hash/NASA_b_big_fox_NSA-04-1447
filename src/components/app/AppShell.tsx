@@ -32,7 +32,7 @@ export function AppShell() {
       <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-background/70 px-4 py-2.5 backdrop-blur-xl">
         <Link to="/dashboard" className="flex items-center gap-2">
           <FoxMark className="h-8 w-8" />
-          <div className="leading-tight"><div className="font-display text-lg font-extrabold tracking-tight">FOX</div><div className="text-[10px] font-medium text-muted-foreground">Stay aware. Stay safe.</div></div>
+          <div className="leading-tight"><div className="font-display text-lg font-extrabold tracking-tight">B fox</div><div className="text-[10px] font-medium text-muted-foreground">Stay aware. Stay safe.</div></div>
         </Link>
         <div className="flex items-center gap-2 font-mono text-[10px]">
           <span className={cn("flex items-center gap-1 rounded-full border px-2 py-0.5", online ? "text-low" : "text-med")}>

@@ -10,7 +10,7 @@ import { OFFLINE_HELP_CONTACTS, validateHelpContacts } from '@/lib/offline-help-
 import { deliverFile } from '@/lib/file-download';
 
 export const Route = createFileRoute("/_authenticated/offline")({
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Offline maps & emergency info — FOX" }, { name: "description", content: "Downloaded maps, safe zones, saved reports and emergency guidance that work without internet." }, { property: "og:title", content: "Offline — FOX" }, { property: "og:description", content: "Maps, safe zones and emergency info that work without internet." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Offline maps & emergency info — B fox" }, { name: "description", content: "Downloaded maps, safe zones, saved reports and emergency guidance that work without internet." }, { property: "og:title", content: "Offline — B fox" }, { property: "og:description", content: "Maps, safe zones and emergency info that work without internet." }] }),
   component: Offline,
 });
 
@@ -52,7 +52,7 @@ function Offline() {
       <Panel title="Help without internet" icon={<LifeBuoy className="h-4 w-4 text-high" />}>
         <Button asChild variant="outline" className="mb-3 w-full"><Link to="/community">Nearby Community · design preview</Link></Button>
         <Button asChild variant="danger" className="w-full"><a href="/emergency-kit.html">Open offline emergency kit</a></Button>
-        <p className="mt-2 text-xs text-muted-foreground">Calls and SMS need mobile signal, not internet. Without any signal, use the phone’s local distress sound and visible HELP signal to attract nearby people. FOX cannot discover or message nearby phones without a network.</p>
+        <p className="mt-2 text-xs text-muted-foreground">Calls and SMS need mobile signal, not internet. Without any signal, use the phone’s local distress sound and visible HELP signal to attract nearby people. B fox cannot discover or message nearby phones without a network.</p>
         <p className="mt-2 text-xs text-muted-foreground">Save your contacts below only on a trusted device. Anyone using this device can see the offline copy, even when signed out. Remove it in the emergency kit when no longer needed.</p>
         <Button variant="outline" className="mt-3 w-full" disabled={!online} onClick={saveContacts}>Save emergency contacts on this device</Button>
         {contactStatus && <p role="status" className="mt-2 text-xs text-low">{contactStatus}</p>}

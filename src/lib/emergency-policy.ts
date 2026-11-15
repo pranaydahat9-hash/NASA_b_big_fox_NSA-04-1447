@@ -7,6 +7,6 @@ export const EMERGENCY_SERVICES = [
   { name: 'Fire', number: '112' },
 ] as const;
 export function emergencyMessageOpening(name: string, drill: boolean) {
-  return drill ? `[DRILL — NO EMERGENCY] FOX red-alert practice from ${name}. This is a test; no emergency assistance is requested.` : `SOS from ${name}: I need help.`;
+  return drill ? `[DRILL — NO EMERGENCY] B fox red-alert practice from ${name}. This is a test; no emergency assistance is requested.` : `SOS from ${name}: I need help.`;
 }
 export const automaticAlertSmsAllowed = (drill: boolean) => !drill;

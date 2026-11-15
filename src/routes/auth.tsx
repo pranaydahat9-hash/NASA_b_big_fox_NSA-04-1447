@@ -9,8 +9,8 @@ import { FoxMark } from "@/components/app/FoxMark";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" },
-    { title: "Sign in — FOX Disaster Watch" }, { name: "description", content: "Sign in to FOX to save emergency contacts, places and reports." },
-    { property: "og:title", content: "Sign in — FOX Disaster Watch" }, { property: "og:description", content: "Sign in to FOX to save emergency contacts, places and reports." },
+    { title: "Sign in — B fox Disaster Watch" }, { name: "description", content: "Sign in to B fox to save emergency contacts, places and reports." },
+    { property: "og:title", content: "Sign in — B fox Disaster Watch" }, { property: "og:description", content: "Sign in to B fox to save emergency contacts, places and reports." },
   ] }),
   component: AuthPage,
 });
@@ -40,7 +40,7 @@ function AuthPage() {
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center px-5">
       <div className="glass w-full max-w-sm rounded-3xl p-6 animate-float-up">
-        <div className="mb-6 flex items-center gap-3"><FoxMark className="h-10 w-10" /><div><h1 className="text-2xl font-bold">FOX</h1><p className="text-xs text-muted-foreground">Satellite disaster watch</p></div></div>
+        <div className="mb-6 flex items-center gap-3"><FoxMark className="h-10 w-10" /><div><h1 className="text-2xl font-bold">B fox</h1><p className="text-xs text-muted-foreground">Satellite disaster watch</p></div></div>
         {sent ? (
           <p className="text-sm">Check <b>{email}</b> for a confirmation link, then come back and sign in.</p>
         ) : (

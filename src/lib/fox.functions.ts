@@ -25,7 +25,7 @@ export const askFox = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { generateResponse, GatewayError } = await import("@lovable.dev/ai-gateway");
     const lang = { en: "English", hi: "Hindi (Devanagari)", mr: "Marathi (Devanagari)" }[data.language];
-    const instructions = `You are FOX, the voice + text agent inside a disaster-management app (NASA Space Apps). You CONTROL the app through tools — prefer taking real actions over describing them. Reply in ${lang}, short (1-3 sentences, it is spoken aloud), calm and practical. If the user is in danger or says help/SOS/bachao/madat, call trigger_sos immediately. When asked about a place's risk, call search_map. To explain graphs or data, use ONLY the numbers in the app context below and cite their source; never invent data. App context:\n${data.context}`;
+    const instructions = `You are B fox, the voice + text agent inside a disaster-management app (NASA Space Apps). You CONTROL the app through tools — prefer taking real actions over describing them. Reply in ${lang}, short (1-3 sentences, it is spoken aloud), calm and practical. If the user is in danger or says help/SOS/bachao/madat, call trigger_sos immediately. When asked about a place's risk, call search_map. To explain graphs or data, use ONLY the numbers in the app context below and cite their source; never invent data. App context:\n${data.context}`;
     try {
       const res: any = await generateResponse({
         model: "openai/gpt-6-astra",
@@ -47,8 +47,8 @@ export const askFox = createServerFn({ method: "POST" })
       return { reply: text.trim(), actions, error: null as string | null };
     } catch (e) {
       if (e instanceof GatewayError) {
-        console.error("FOX gateway error", e.code, e.httpStatus);
-        const msg = e.httpStatus === 402 ? "AI credits are exhausted for this workspace." : e.httpStatus === 429 ? "FOX is busy — please try again in a moment." : "FOX could not reach the AI service.";
+        console.error("B fox gateway error", e.code, e.httpStatus);
+        const msg = e.httpStatus === 402 ? "AI credits are exhausted for this workspace." : e.httpStatus === 429 ? "B fox is busy — please try again in a moment." : "B fox could not reach the AI service.";
         return { reply: "", actions: [], error: msg };
       }
       throw e;

@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute('/_authenticated/community')({
   head: () => ({ meta: [
-    { title: 'Nearby Community — FOX offline connection design' },
-    { name: 'description', content: 'Explore the FOX nearby community design for offline phone-to-phone text and alert sharing. Native connectivity is not available in this web preview.' },
-    { property: 'og:title', content: 'Nearby Community — FOX' },
+    { title: 'Nearby Community — B fox offline connection design' },
+    { name: 'description', content: 'Explore the B fox nearby community design for offline phone-to-phone text and alert sharing. Native connectivity is not available in this web preview.' },
+    { property: 'og:title', content: 'Nearby Community — B fox' },
     { property: 'og:description', content: 'A clearly labelled design for nearby offline community messaging and alerts.' },
     { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' },
   ] }),

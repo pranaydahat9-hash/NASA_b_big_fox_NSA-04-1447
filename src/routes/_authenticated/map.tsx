@@ -32,7 +32,7 @@ export const Route = createFileRoute("/_authenticated/map")({
     lon: s["lon"] != null && Number.isFinite(Number(s["lon"])) ? Number(s["lon"]) : undefined,
     safe: s["safe"] ? 1 : undefined,
   }),
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Live hazard map — FOX" }, { name: "description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }, { property: "og:title", content: "Live hazard map — FOX" }, { property: "og:description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Live hazard map — B fox" }, { name: "description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }, { property: "og:title", content: "Live hazard map — B fox" }, { property: "og:description", content: "Tap any place to get its disaster prediction, safe zones and evacuation routes." }] }),
   component: MapPage,
 });
 
@@ -112,7 +112,7 @@ function MapPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // FOX search → map
+  // B fox search → map
   useEffect(() => {
     if (!search.q) return;
     setQ(search.q);
@@ -149,7 +149,7 @@ function MapPage() {
     g.addTo(map); layers.current["point"] = g;
   }, [point, assess.data, safe.data, show.safe, show.fires, route, mapReady]);
 
-  // Expose to FOX
+  // Expose to B fox
   useEffect(() => {
     const a = assess.data;
     setFoxContext("Map assessment", a ? `Place: ${point?.name ?? ""} (${a.lat.toFixed(3)},${a.lon.toFixed(3)}), generated ${a.generatedAt}. Overall ${a.overall}, alert tier ${a.alert}.\n` + a.hazards.map((h) => `- ${h.type}: ${h.level} score ${h.score}; ${h.window}; impact: ${h.harm}; coverage ${h.radiusKm} km radius; sources: ${h.readings.map((r) => `${r.label}=${r.value} @${r.observedAt} (${r.source})`).join("; ")}`).join("\n") : null);
@@ -192,7 +192,7 @@ function MapPage() {
     setPdfBusy(true); setReadyPdf(null);
     try {
       const blob = await buildReportPdf(assess.data, point.name ?? "Selected area", rankedSafe);
-      setReadyPdf({ blob, filename: `FOX-safe-zones-${(point.name ?? "area").split(",")[0]}.pdf` });
+      setReadyPdf({ blob, filename: `B-fox-safe-zones-${(point.name ?? "area").split(",")[0]}.pdf` });
       try {
         await saveReport({ id: crypto.randomUUID(), title: `Safe-zone map · ${point.name ?? ""}`, place: point.name ?? "", createdAt: new Date().toISOString(), level: assess.data.overall, blob });
         toast.success("PDF ready and saved for offline use");

@@ -94,7 +94,7 @@ export function FoxAgent() {
   async function send(text: string) {
     const q = text.trim(); if (!q || busy) return;
     const { data: session } = await supabase.auth.getSession();
-    if (!session.session) { setMsgs(m=>[...m,{role:"assistant",content:"Sign in to use FOX actions and your saved contacts. For an immediate emergency, call 112."}]); return; }
+    if (!session.session) { setMsgs(m=>[...m,{role:"assistant",content:"Sign in to use B fox actions and your saved contacts. For an immediate emergency, call 112."}]); return; }
     setInput("");
     const next = [...msgs, { role: "user" as const, content: q }];
     setMsgs(next);
@@ -118,7 +118,7 @@ export function FoxAgent() {
       if (r.error) { const error = r.error; setMsgs((m) => [...m, { role: "assistant", content: error }]); say(error); return; }
       const results: string[] = [];
       for (const a of r.actions) {
-        if (a.name === 'trigger_sos' && !isEmergencyCommand(q)) { results.push('No SOS sent. Open Direct SOS to activate it, or say “Hey FOX, help me” in an emergency.'); continue; }
+        if (a.name === 'trigger_sos' && !isEmergencyCommand(q)) { results.push('No SOS sent. Open Direct SOS to activate it, or say “Hey B fox, help me” in an emergency.'); continue; }
         results.push(await runAction(a));
       }
       const reply = results.length ? results.join(". ") : r.reply || "No action was performed.";
@@ -143,7 +143,7 @@ export function FoxAgent() {
     recRef.current = r; setListening(true); r.start();
   }
 
-  // Hands-free "Hey FOX" wake word
+  // Hands-free "Hey B fox" wake word
   useEffect(() => {
     if (!s.handsFree || !SR) return;
     let alive = true;
@@ -168,18 +168,18 @@ export function FoxAgent() {
 
   return (
     <>
-      <Button aria-label="Open FOX assistant" onClick={() => setOpen(true)} className="haptic fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-neon glow sm:right-[max(1rem,calc(50vw-23rem))]">
+      <Button aria-label="Open B fox assistant" onClick={() => setOpen(true)} className="haptic fixed bottom-24 right-4 z-40 grid h-14 w-14 place-items-center rounded-full bg-gradient-neon glow sm:right-[max(1rem,calc(50vw-23rem))]">
         <span className="absolute inset-0 rounded-full bg-primary/40 animate-ping-slow" />
         <FoxMark className="relative h-8 w-8 rounded-full" />
         {s.handsFree && <Ear className="absolute -left-1 -top-1 h-4 w-4 rounded-full bg-background p-0.5 text-cyan" />}
       </Button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-background/60 backdrop-blur-sm sm:items-center" onClick={() => setOpen(false)}>
-          <div role="dialog" aria-label="FOX assistant" className="glass flex h-[78dvh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl animate-float-up" onClick={(e) => e.stopPropagation()}>
+          <div role="dialog" aria-label="B fox assistant" className="glass flex h-[78dvh] w-full max-w-lg flex-col rounded-t-3xl sm:rounded-3xl animate-float-up" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 border-b px-4 py-3">
               <div className="relative"><FoxMark className="h-9 w-9" />{(busy || speaking) && <span className="absolute inset-0 rounded-full ring-2 ring-primary animate-ping-slow" />}</div>
-              <div className="min-w-0 flex-1"><div className="font-display font-bold">FOX</div><div className="text-[10px] text-muted-foreground">{busy ? "thinking…" : speaking ? "speaking…" : listening ? "listening…" : "Ready"}</div></div>
-              <button onClick={() => set("handsFree", !s.handsFree)} className={cn("haptic rounded-full border px-2 py-1 text-[10px]", s.handsFree ? "border-cyan text-cyan" : "text-muted-foreground")}>“Hey FOX” {s.handsFree ? "on" : "off"}</button>
+              <div className="min-w-0 flex-1"><div className="font-display font-bold">B fox</div><div className="text-[10px] text-muted-foreground">{busy ? "thinking…" : speaking ? "speaking…" : listening ? "listening…" : "Ready"}</div></div>
+              <button onClick={() => set("handsFree", !s.handsFree)} className={cn("haptic rounded-full border px-2 py-1 text-[10px]", s.handsFree ? "border-cyan text-cyan" : "text-muted-foreground")}>“Hey B fox” {s.handsFree ? "on" : "off"}</button>
               <button aria-label="Close" onClick={() => setOpen(false)} className="haptic rounded-full p-1.5 hover:bg-accent"><X className="h-4 w-4" /></button>
             </div>
             <div className="flex-1 space-y-3 overflow-y-auto p-4">
@@ -202,7 +202,7 @@ export function FoxAgent() {
               <button type="button" onClick={listenOnce} aria-label="Speak" className={cn("haptic grid h-11 w-11 shrink-0 place-items-center rounded-full border", listening ? "bg-high text-destructive-foreground animate-pulse" : "bg-surface")}>
                 {listening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </button>
-              <input aria-label="Message FOX" value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("askFox", s.language)} className="h-11 min-w-0 flex-1 rounded-full border bg-surface px-4 text-sm outline-none focus:border-primary" />
+              <input aria-label="Message B fox" value={input} onChange={(e) => setInput(e.target.value)} placeholder={t("askFox", s.language)} className="h-11 min-w-0 flex-1 rounded-full border bg-surface px-4 text-sm outline-none focus:border-primary" />
               <button aria-label="Send" disabled={busy} className="haptic grid h-11 w-11 shrink-0 place-items-center rounded-full bg-gradient-neon text-primary-foreground disabled:opacity-50"><Send className="h-4 w-4" /></button>
             </form>
           </div>

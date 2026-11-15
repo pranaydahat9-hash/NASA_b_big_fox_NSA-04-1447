@@ -4,7 +4,7 @@
   const network = () => { el('network').textContent = navigator.onLine ? 'Ready · Internet available' : 'Offline · Calls/SMS still need mobile signal'; };
   network(); window.addEventListener('online', network); window.addEventListener('offline', network);
   let contacts = [];
-  try { const saved = JSON.parse(localStorage.getItem(key) || 'null'); contacts = Array.isArray(saved?.contacts) ? saved.contacts.filter(c => typeof c.name === 'string' && /^\+[1-9]\d{6,14}$/.test(c.phone)).slice(0, 30) : []; el('contact-status').textContent = contacts.length ? `Saved on ${new Date(saved.savedAt).toLocaleString()}.` : 'No contacts saved on this device. While online, save contacts from FOX downloads.'; } catch { el('contact-status').textContent = 'Saved contacts could not be read.'; }
+  try { const saved = JSON.parse(localStorage.getItem(key) || 'null'); contacts = Array.isArray(saved?.contacts) ? saved.contacts.filter(c => typeof c.name === 'string' && /^\+[1-9]\d{6,14}$/.test(c.phone)).slice(0, 30) : []; el('contact-status').textContent = contacts.length ? `Saved on ${new Date(saved.savedAt).toLocaleString()}.` : 'No contacts saved on this device. While online, save contacts from B fox downloads.'; } catch { el('contact-status').textContent = 'Saved contacts could not be read.'; }
   const render = () => {
     el('contacts').replaceChildren();
     for (const contact of contacts) {
@@ -17,7 +17,7 @@
     }
   };
   render(); el('message').addEventListener('input', render);
-  el('clear-contacts').onclick = () => { localStorage.removeItem(key); contacts = []; render(); el('contact-status').textContent = 'Contacts removed from this device. Your FOX account contacts are unchanged.'; };
+  el('clear-contacts').onclick = () => { localStorage.removeItem(key); contacts = []; render(); el('contact-status').textContent = 'Contacts removed from this device. Your B fox account contacts are unchanged.'; };
   el('location').onclick = () => {
     if (!navigator.geolocation) { el('location-status').textContent = 'GPS unavailable on this device. Add your address to the message.'; return; }
     el('location-status').textContent = 'Getting GPS location…';

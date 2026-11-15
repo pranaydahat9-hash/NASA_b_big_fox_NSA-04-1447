@@ -16,7 +16,7 @@ const dict = {
   safeZones: { en: "Safe zones", hi: "सुरक्षित क्षेत्र", mr: "सुरक्षित क्षेत्रे" },
   holdSos: { en: "Hold to send SOS", hi: "SOS भेजने के लिए दबाए रखें", mr: "SOS पाठवण्यासाठी दाबून ठेवा" },
   contacts: { en: "Emergency contacts", hi: "आपातकालीन संपर्क", mr: "आपत्कालीन संपर्क" },
-  askFox: { en: "Ask FOX or say “Hey FOX, help me”", hi: "FOX से पूछें या कहें “Hey FOX, मदद”", mr: "FOX ला विचारा किंवा म्हणा “Hey FOX, मदत”" },
+  askFox: { en: "Ask B fox or say “Hey B fox, help me”", hi: "B fox से पूछें या कहें “Hey B fox, मदद”", mr: "B fox ला विचारा किंवा म्हणा “Hey B fox, मदत”" },
   useMyLocation: { en: "Use my location", hi: "मेरा स्थान", mr: "माझे स्थान" },
   weatherOutlook: { en: "16-day weather outlook", hi: "16-दिन मौसम पूर्वानुमान", mr: "16-दिवस हवामान अंदाज" },
   waterLevel: { en: "Water level & flood gauge", hi: "जल स्तर और बाढ़ संकेत", mr: "पाणी पातळी व पूर संकेत" },

@@ -21,9 +21,9 @@ export const sendSos = createServerFn({ method: "POST" })
     ]);
     if (contactsResult.error) throw new Error("Could not read emergency contacts — use manual send");
     const contacts = contactsResult.data, profile = profileResult.data;
-    const who = profile?.display_name ?? "A FOX user";
+    const who = profile?.display_name ?? "A B fox user";
     const loc = data.lat != null && data.lon != null ? `https://maps.google.com/?q=${data.lat.toFixed(6)},${data.lon.toFixed(6)} (±${Math.round(data.accuracy ?? 0)} m)` : "location unavailable";
-    const message = `${emergencyMessageOpening(who, data.trigger === 'drill')} ${data.stale ? "Last known location" : "Location at activation"}: ${loc}${data.locationAt ? ` (observed ${data.locationAt})` : ""}. ${data.trigger !== 'drill' && data.note ? data.note + " " : ""}Sent via FOX at ${new Date().toUTCString()}`;
+    const message = `${emergencyMessageOpening(who, data.trigger === 'drill')} ${data.stale ? "Last known location" : "Location at activation"}: ${loc}${data.locationAt ? ` (observed ${data.locationAt})` : ""}. ${data.trigger !== 'drill' && data.note ? data.note + " " : ""}Sent via B fox at ${new Date().toUTCString()}`;
     const { sendSms } = await import("./sms.server");
     const deliveries = (contacts ?? []).length ? await sendSms(contacts ?? [], message) : [];
     const { data: ev, error: saveError } = await supabase.from("sos_events").insert({ user_id: userId, lat: data.lat, lon: data.lon, accuracy_m: data.accuracy, message, trigger: data.trigger, deliveries }).select("id, created_at").single();

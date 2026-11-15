@@ -19,7 +19,7 @@ import { emitFox } from "@/lib/fox-bus";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Settings — FOX" }, { name: "description", content: "Language, themes, accessibility, notifications, saved places and account settings for FOX." }, { property: "og:title", content: "Settings — FOX" }, { property: "og:description", content: "Personalise FOX: language, themes, accessibility and alerts." }] }),
+  head: () => ({ meta: [{ property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }, { title: "Settings — B fox" }, { name: "description", content: "Language, themes, accessibility, notifications, saved places and account settings for B fox." }, { property: "og:title", content: "Settings — B fox" }, { property: "og:description", content: "Personalise B fox: language, themes, accessibility and alerts." }] }),
   component: SettingsPage,
 });
 
@@ -73,7 +73,7 @@ function SettingsPage() {
       const tables = ["profiles", "emergency_contacts", "saved_locations", "sos_events", "community_reports", "report_verifications"] as const;
       const rows = await Promise.all(tables.map(async table => { const {data,error}=await supabase.from(table).select("*"); if(error) throw error; return [table,data]; }));
       const url=URL.createObjectURL(new Blob([JSON.stringify({exportedAt:new Date().toISOString(),data:Object.fromEntries(rows)},null,2)],{type:"application/json"}));
-      const a=document.createElement("a");a.href=url;a.download="FOX-private-data.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
+      const a=document.createElement("a");a.href=url;a.download="B-fox-private-data.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),10000);
     } catch { toast.error("Could not export your data"); }
   };
   const signOut = async () => { await supabase.auth.signOut(); nav({ to: "/auth" }); };
@@ -90,7 +90,7 @@ function SettingsPage() {
       </Panel>
       <Panel title="Language" icon={<Languages className="h-4 w-4 text-cyan" />}>
         <Chips value={s.language} onChange={(v) => set("language", v)} options={[{ v: "en", l: "English" }, { v: "hi", l: "हिन्दी" }, { v: "mr", l: "मराठी" }]} />
-        <p className="mt-2 text-[11px] text-muted-foreground">English, Hindi and Marathi are available for navigation and FOX voice. Some agency descriptions and page content remain in English; other languages are not yet translated.</p>
+        <p className="mt-2 text-[11px] text-muted-foreground">English, Hindi and Marathi are available for navigation and B fox voice. Some agency descriptions and page content remain in English; other languages are not yet translated.</p>
       </Panel>
       <Panel title="Accessibility" icon={<Accessibility className="h-4 w-4 text-primary" />}>
         <div className="py-2 text-sm">Text size <span className="font-mono text-xs text-muted-foreground">{Math.round(s.fontScale * 100)}%</span>
@@ -99,8 +99,8 @@ function SettingsPage() {
         <Row label="High contrast" k="highContrast" />
         <Row label="Reduce motion" k="reduceMotion" />
         <Row label="Click sounds & vibration" k="clicks" />
-        <Row label="FOX speaks replies" k="voiceReplies" />
-        <Row label="Hands-free “Hey FOX”" k="handsFree" hint="Keeps the microphone listening while the app is open" />
+        <Row label="B fox speaks replies" k="voiceReplies" />
+        <Row label="Hands-free “Hey B fox”" k="handsFree" hint="Keeps the microphone listening while the app is open" />
       </Panel>
       <Panel title="Notifications" icon={<Bell className="h-4 w-4 text-med" />}>
         <Row label="Low (green) — news notices" k="notifyLow" />
@@ -138,10 +138,10 @@ function SettingsPage() {
         <Link to="/offline" className="mt-2 inline-flex items-center gap-1 text-xs text-primary"><Download className="h-3 w-3" />Offline maps & downloads</Link>
       </Panel>
       <Panel title="About, privacy & help" icon={<Info className="h-4 w-4 text-muted-foreground" />}>
-        <details className="py-1 text-sm"><summary className="cursor-pointer">About FOX</summary><p className="mt-1 text-xs text-muted-foreground">FOX turns live NASA (EONET, POWER, FIRMS), USGS, Open-Meteo and OpenStreetMap data into area-specific hazard alerts. Predictions are rule-based on published agency thresholds and always show their sources.</p></details>
+        <details className="py-1 text-sm"><summary className="cursor-pointer">About B fox</summary><p className="mt-1 text-xs text-muted-foreground">B fox turns live NASA (EONET, POWER, FIRMS), USGS, Open-Meteo and OpenStreetMap data into area-specific hazard alerts. Predictions are rule-based on published agency thresholds and always show their sources.</p></details>
         <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><Shield className="inline h-3 w-3" /> Data & privacy</summary><p className="mt-1 text-xs text-muted-foreground">Your contacts, saved places, SOS history and reports are visible only to you. Location is read only when you allow it. SOS shares your activation location with your saved contacts through Twilio; this is not continuous live tracking. Selected coordinates are also sent to weather, NASA and mapping services for area assessments. Settings and offline maps stay on this device.</p></details>
         <Button variant="outline" size="sm" className="my-2 gap-2" onClick={exportData}><Download className="h-3 w-3"/>Export my private data</Button>
-        <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><HelpCircle className="inline h-3 w-3" /> Help</summary><p className="mt-1 text-xs text-muted-foreground">Tap any place on the map for its prediction. Hold the SOS button 1.5 s or say “Hey FOX, help me”. In India dial 112 for emergencies.</p></details>
+        <details className="py-1 text-sm"><summary className="cursor-pointer flex items-center gap-1"><HelpCircle className="inline h-3 w-3" /> Help</summary><p className="mt-1 text-xs text-muted-foreground">Tap any place on the map for its prediction. Hold the SOS button 1.5 s or say “Hey B fox, help me”. In India dial 112 for emergencies.</p></details>
       </Panel>
       <Panel>
         <Button variant="outline" className="w-full gap-2" onClick={signOut}><LogOut className="h-4 w-4" />Sign out</Button>

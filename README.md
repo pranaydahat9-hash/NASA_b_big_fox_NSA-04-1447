@@ -1,4 +1,4 @@
-# FOX Disaster Sentinel
+# B fox Disaster Sentinel
 
 Build an app that We want to build a satellite database disaster management app. 
 We are focusing right now on mobile, Flutter, and all that. We will show that first demo to the judge and then we will think to build the solution. It is a space challenge, a NASA space challenge.  
@@ -144,15 +144,15 @@ And it will help to use the application to 6. Downloadable Reports (PDF)
 
 - Notification and emergency contact settings.
 
-2. FOX AI Agent
+2. B fox AI Agent
 
-Rename the AI assistant to FOX. Make it accessible from every page and allow users to control the entire application using text or voice commands.
+Rename the AI assistant to B fox. Make it accessible from every page and allow users to control the entire application using text or voice commands.
 
-FOX should navigate pages, change settings, search maps, explain graphs, access saved locations, and activate the SOS system. Implement real actions, not just chatbot replies.
+B fox should navigate pages, change settings, search maps, explain graphs, access saved locations, and activate the SOS system. Implement real actions, not just chatbot replies.
 
 3. SOS System
 
-Allow users to activate SOS using a button or commands like "Hey FOX, help me." Get the user's location with permission and send emergency alerts to saved contacts using an integrated service. Show actual delivery status and provide a manual fallback.
+Allow users to activate SOS using a button or commands like "Hey B fox, help me." Get the user's location with permission and send emergency alerts to saved contacts using an integrated service. Show actual delivery status and provide a manual fallback.
 
 4. NASA Data & Graphs
 
@@ -168,7 +168,7 @@ Integrate relevant NASA APIs, including NASA FIRMS for active fires and suitable
 
 - Nearby disaster alerts and report verification.
 
-Important: Maintain the existing design and blue theme, make everything responsive, secure user data, and ensure all features work properly. Inspect the existing code before making changes. Do not use fake data or placeholder functionality. If any API or backend integration is missing, clearly identify what is required.    Make sure that FOX talks back with our  user. 
+Important: Maintain the existing design and blue theme, make everything responsive, secure user data, and ensure all features work properly. Inspect the existing code before making changes. Do not use fake data or placeholder functionality. If any API or backend integration is missing, clearly identify what is required.    Make sure that B fox talks back with our  user. 
 Or you have removed the safe zone area part in the map section so add a safe area section in the map section. Download Safzon area map in it. Weather outlooks cannot be accessed. Problem in weather: prevent वाले में outlook में ही problem है. Prevent section में problem है. Outlook वाले area में, fix that also. There is some problem in In prevention add the weather API.
 
 This project was built with [Lovable](https://lovable.dev).

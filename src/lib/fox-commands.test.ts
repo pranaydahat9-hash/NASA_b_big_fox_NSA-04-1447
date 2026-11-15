@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { isEmergencyCommand, parseLocalCommand, settingValue } from './fox-commands';
-describe('FOX commands', () => {
+describe('B fox commands', () => {
  it('sends SOS for the requested wake phrase', () => expect(parseLocalCommand('Hey FOX, help me')?.name).toBe('trigger_sos'));
+ it('sends SOS for the renamed wake phrase', () => expect(parseLocalCommand('Hey B fox, help me')?.name).toBe('trigger_sos'));
  it('sends SOS for SOS alone', () => expect(isEmergencyCommand('SOS')).toBe(true));
  it('does not dispatch when asking about help settings', () => expect(isEmergencyCommand('Open help settings')).toBe(false));
  it('opens graphs without AI', () => expect(parseLocalCommand('Open trends')).toEqual({ name:'navigate', args:{page:'trends'} }));
