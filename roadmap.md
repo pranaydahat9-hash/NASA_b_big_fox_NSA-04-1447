@@ -1,4 +1,8 @@
 # Existing-app upgrade
+## Android handoff plan
+- [x] Write a Kotlin/Android Studio plan for Nearby Connections screens, B fox account access, owner-only SOS history, security, real-device acceptance tests, and a draft Play Store listing.
+- [x] Check official Nearby Connections guidance and current Play submission requirements; distinguish the proposed native app from the existing web preview.
+
 ## Map APIs and theme-independent PDFs
 - [x] Sweep every PDF entry point: Map preparation/delivery and Reports generation/saved downloads use the shared theme-independent delivery helper; Reports previews revoke old URLs. Trends no longer downloads after asynchronous preparation; a ready-file click delivers it. Offline saved reports now have an explicit download alongside existing preview. FOX download requests navigate to Reports; Settings links to Offline and exports JSON, not PDF. The shared PDF builder/storage and server data providers have no theme gate; public emergency help, background work and database functions contain no PDF delivery. Existing saved blobs and permissions are unchanged.
 - [x] Guard all three map availability readers and version the feed query key; older cached responses show unknown status rather than assuming availability or crashing. Verified injected old response, five real PDF flows in pink, and ten focused tests; no runtime errors.
