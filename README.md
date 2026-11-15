@@ -1,296 +1,294 @@
-# Fox Disaster watch&#x20;
+# Fox Disaster Watch 🦊
+### Disaster Awareness, Risk Analysis & Preparedness
 
-**An intelligent disaster awareness and preparedness platform powered by geospatial insights and Earth observation data.**
+**Team:** B Big Fox  
+**Challenge:** NASA Space Apps Challenge 2026  
+**Institution:** G H Raisoni Skill Tech University, Nagpur, Maharashtra, India
 
-\
+<p align="center">
+  <a href="https://fox-disaster-sentinel.lovable.app">Live Demo</a> ·
+  <a href="https://github.com/pranaydahat9-hash/NASA_b_big_fox_NSA-04-1447">GitHub Repository</a>
+</p>
 
+---
 
-## Overview
+# 1. Project Title & Problem Statement
 
-Fox Disaster watch is a disaster awareness and preparedness application developed for the **NASA Space Apps Challenge**. It aims to help people understand environmental hazards, explore disaster-prone regions, access relevant Earth observation data, and prepare for potential emergencies.
+## Project Title
 
-The platform focuses on proactive disaster management by bringing geographical information, environmental observations, risk awareness, safety resources, and incident reporting into a unified interface.
+**Fox Disaster Watch — Disaster Awareness and Preparedness Platform**
 
-Rather than focusing only on disaster response, Fox Disaster watch emphasizes **early awareness, prevention, and informed decision-making** to help communities prepare before a disaster occurs.
+**Official Challenge Title:** To be confirmed from the official challenge guidelines.
 
 ## Problem Statement
 
-Natural disasters such as floods, wildfires, cyclones, earthquakes, and extreme weather events can threaten lives, infrastructure, and the environment. However, disaster-related information is often spread across different platforms, making it difficult for people to understand local risks and identify appropriate safety measures.
+Natural disasters such as floods, wildfires, cyclones, earthquakes, and extreme weather events can threaten human lives, infrastructure, and the environment. However, disaster-related information is often scattered across different platforms, making it difficult for people to understand local hazards, assess changing environmental conditions, and prepare for emergencies.
 
-Key challenges include:
+Fox Disaster Watch aims to make disaster-related information more accessible by bringing geographical information, environmental observations, hazard awareness, and preparedness resources into a unified application.
 
-- Limited access to understandable, location-specific hazard information.
-- Difficulty interpreting environmental and satellite observations.
-- Delayed awareness of potential hazards and changing conditions.
-- Limited access to nearby safe zones and preparedness information.
-- Challenges in reporting incidents and sharing emergency information.
-- Lack of accessible, consolidated disaster reports for further analysis.
+The project emphasizes **early awareness, prevention, and informed decision-making** to help people understand potential risks and prepare before emergencies occur.
 
-Fox Disaster watch aims to address these challenges through an accessible, map-oriented disaster awareness platform.
+## Project Objectives
 
-## Objectives
+- Improve access to location-specific disaster information.
+- Explore relevant NASA Earth observation data and other authoritative sources.
+- Present available hazard indicators through maps and visualizations.
+- Encourage preventive action through disaster-specific safety guidance.
+- Support access to safe-zone information and emergency resources.
+- Facilitate incident reporting and awareness of regional hazards.
+- Promote transparent, source-based disaster information.
 
-- Improve awareness of natural hazards using reliable environmental data.
-- Support location-based exploration of disaster risks.
-- Present hazard information with timestamps and source references wherever available.
-- Encourage preventive action through practical safety guidance.
-- Provide access to safe-zone information and emergency resources.
-- Support community reporting and incident verification.
-- Make disaster information easier to understand through visualizations and downloadable reports.
+---
+
+# 2. Team Details
+
+**Team Name:** B Big Fox
+
+**Home Institution:** G H Raisoni Skill Tech University, Nagpur, Maharashtra, India. Individual institutional affiliations should be confirmed before submission.
+
+| Full Name | GitHub Username | Role |
+|---|---|---|
+| Shubhankar Das | [@notshubhankar](https://github.com/notshubhankar) | Team Captain |
+| Pranay Dahat | [@pranaydahat9-hash](https://github.com/pranaydahat9-hash) | To be confirmed |
+| Ishan Tiwari | [@Ishan-max17](https://github.com/Ishan-max17) | To be confirmed |
+| Hansika Lone | [@hansikalone-ai](https://github.com/hansikalone-ai) | To be confirmed |
+| Kunal Dewangan | [@kunaldewanga09-oss](https://github.com/kunaldewanga09-oss) | To be confirmed |
+
+*Note: Confirm each member's institution and engineering/design contribution, and verify that the GitHub profile links match the intended accounts.*
+
+---
+
+# 3. Solution Overview & Architecture
+
+## Solution Overview
+
+Fox Disaster Watch is a disaster awareness and preparedness platform designed to help users explore environmental hazards, understand location-based information, and access relevant safety resources.
+
+The project combines a web-based user interface with planned and configured data integrations to support disaster monitoring, geographical exploration, and preventive decision-making.
 
 ## Key Features
 
-### 1. Disaster Risk Dashboard
+### Disaster Dashboard
+- Centralized access to available disaster-related information.
+- Hazard indicators and regional conditions where supported.
+- Clear presentation of available observations and timestamps.
 
-A centralized interface for exploring disaster-related information, environmental indicators, and hazard assessments.
+### Interactive Disaster Maps
+- Search and explore geographical locations.
+- View available hazard information and map overlays.
+- Access safe-zone information where implemented and available.
+- Support location-based disaster awareness.
 
-- Overview of relevant hazards and regional conditions.
-- Severity indicators for communicating risk levels.
-- Location-based exploration of disaster information.
-- Clear presentation of available observations and their timestamps.
+### NASA and Environmental Data
+The project is intended to use relevant Earth observation and environmental datasets to support disaster awareness.
 
-### 2. Interactive Disaster Maps
+Potential data sources include NASA FIRMS for active fires, NASA Earthdata for Earth observation datasets, and suitable meteorological and geological data services. Each integration must be verified against the actual implementation before being described as operational.
 
-Explore geographical regions and view available disaster-related information on an interactive map.
+### Hazard Analysis and Prevention
+- Present available environmental observations and historical trends.
+- Help users understand hazard indicators.
+- Provide preventive guidance and preparedness information.
+- Distinguish observed events from forecasts and experimental predictions.
 
-- Search for specific locations and regions.
-- Explore relevant hazard information for selected areas.
-- View available geographical overlays and incident reports.
-- Access safe-zone information where available.
-- Support location-based safety awareness and planning.
+### B Fox AI Assistant — Planned/Integration-Dependent
+The proposed B Fox assistant is intended to support text and voice interaction, answer questions about available information, and help users navigate the application.
 
-### 3. NASA and Earth Observation Data
+Application control, spoken responses, and automated emergency actions depend on the corresponding integrations being implemented and tested.
 
-The project is designed to incorporate relevant NASA datasets and other authoritative sources to support environmental monitoring and disaster awareness.
+### SOS and Emergency Assistance — Planned/Integration-Dependent
+The intended emergency workflow includes manual SOS activation, emergency contacts, location sharing, and message delivery through a configured service. These capabilities must be tested before being represented as fully operational.
 
-Potential integrations include:
+### Disaster Reports — Implementation-Dependent
+The planned reporting functionality includes structured disaster summaries, charts, maps, timestamps, source references, and PDF export where supported.
 
-- **NASA FIRMS:** Satellite-based active fire information.
-- **NASA Earth observation datasets:** Environmental and land-surface observations relevant to selected hazards.
-- **NASA POWER:** Meteorological and solar-related data for suitable environmental analyses.
-- **USGS Earthquake Catalog:** Earthquake event information.
-- **Weather data services:** Forecasts and current conditions, depending on the configured provider.
+Reports should distinguish verified observations from forecasts and clearly disclose missing data.
 
-Data availability, geographic coverage, update frequency, and suitability depend on the source and its API. Each displayed assessment should identify its source and observation time wherever possible.
+## System Architecture
 
-### 4. Hazard Assessment and Trend Analysis
+The following diagram represents the proposed high-level architecture, not a claim that every connection is already implemented.
 
-Support the interpretation of environmental conditions and historical observations.
+```mermaid
+flowchart TD
+    A[User]
+    B[Fox Disaster Watch Interface]
+    C[Dashboard and Maps]
+    D[Prevention and Safe Zones]
+    E[B Fox Assistant and SOS]
+    F[Application Logic]
+    G[NASA Data Sources]
+    H[Weather and Geological APIs]
+    I[Mapping Services]
+    J[Data Processing and Visualization]
+    K[Reports and Safety Information]
 
-- Explore hazard information for selected locations.
-- Compare historical and recent observations where datasets permit.
-- Present trends through charts and geographical visualizations.
-- Communicate the severity and potential relevance of available indicators.
-- Distinguish observed events, forecasts, and model-based estimates.
-
-Predictions and risk estimates must be supported by appropriate data and validated methods. They should not be interpreted as guaranteed disaster forecasts.
-
-### 5. Prevention and Preparedness
-
-Help users understand how to prepare for different types of disasters.
-
-- Hazard-specific preparedness guidance.
-- Preventive actions based on the selected hazard.
-- Weather-related information where the required API is configured.
-- Information about nearby safe areas where available.
-- Guidance for responding to changing risk conditions.
-
-### 6. Alert Classification
-
-The planned alert framework uses three levels to communicate urgency:
-
-| Level  | Colour | Purpose                                           |
-| ------ | ------ | ------------------------------------------------- |
-| Low    | Green  | General awareness and preventive information      |
-| Medium | Yellow | Increased attention and preparedness              |
-| High   | Red    | Urgent warnings and recommended protective action |
-
-Alert timing and delivery should be based on verified source information and the capabilities of the integrated warning services. Colour classifications alone do not establish the probability or timing of a disaster.
-
-### 7. B Fox AI Assistant
-
-B Fox is the proposed AI-powered assistant for making the application easier to use through text and voice interaction.
-
-Planned capabilities include:
-
-- Answering questions about available disaster information.
-- Helping users navigate application sections.
-- Explaining graphs, indicators, and reports.
-- Assisting with location searches and safety guidance.
-- Supporting emergency workflows and SOS activation.
-
-Voice recognition, spoken responses, application control, and emergency-message delivery depend on the corresponding integrations and permissions being implemented.
-
-### 8. SOS and Emergency Contacts
-
-The emergency assistance module is intended to help users share their location with trusted contacts when they need help.
-
-Planned functionality includes:
-
-- Manual SOS activation.
-- Emergency contact management.
-- Location sharing with user permission.
-- Voice-assisted SOS activation through B Fox.
-- Emergency message delivery through a configured communication service.
-- Delivery-status feedback and manual fallback options.
-
-An SOS message should only be reported as delivered when the connected service confirms its delivery status. Users should not rely exclusively on the application for emergency assistance.
-
-### 9. Historical Reports and PDF Downloads
-
-Generate structured disaster reports for review, reference, and offline access.
-
-Reports can be designed to include:
-
-- Disaster type and affected geographical region.
-- Relevant observations, dates, and timestamps.
-- Maps, graphs, and statistical summaries.
-- Hazard severity and historical trends where supported.
-- Data-source links and NASA references where applicable.
-- Limitations, data gaps, and interpretation notes.
-
-PDF generation and saved-report access depend on the implementation available in the application. Reports must distinguish verified historical events from forecasts and model estimates.
-
-### 10. Accessibility and User Settings
-
-The planned settings module is intended to improve accessibility and usability through:
-
-- Language selection, including Hindi and Marathi.
-- Font-size and accessibility preferences.
-- Light and dark themes.
-- Notification preferences.
-- Emergency contact management.
-- Account and privacy settings.
-- Saved locations and offline resources where supported.
+    A --> B
+    B --> C
+    B --> D
+    B --> E
+    C --> F
+    D --> F
+    E --> F
+    F --> G
+    F --> H
+    F --> I
+    G --> J
+    H --> J
+    I --> J
+    J --> K
+```
 
 ## Technology Stack
 
-The application is being developed as a web-based project using Lovable. The exact technologies and integrations should be confirmed against the current repository configuration.
+| Component | Technology |
+|---|---|
+| Application development | Lovable |
+| Version control | Git and GitHub |
+| Frontend framework | To be verified from repository |
+| Programming language | To be verified from repository |
+| Data integrations | NASA and other APIs, where configured |
+| Mapping | Configured mapping provider |
+| Backend and storage | To be verified from repository |
+| AI assistant and voice | Integration-dependent |
 
-| Component                  | Technology or Service                  |
-| -------------------------- | -------------------------------------- |
-| Application development    | Lovable                                |
-| Source control             | Git and GitHub                         |
-| Earth observation          | NASA APIs and datasets, as configured  |
-| Fire monitoring            | NASA FIRMS, if integrated              |
-| Seismic information        | USGS Earthquake Catalog, if integrated |
-| Weather information        | Configured weather API                 |
-| Mapping                    | Configured mapping provider            |
-| Backend and authentication | Configured backend services            |
-| AI assistant               | Configured AI and voice services       |
+Only technologies and services confirmed in the source code should be identified as implemented components.
 
-**Note:** The table describes the project's intended integrations, not a guarantee that every service is currently implemented. Check the source code and environment configuration before relying on any particular integration.
+---
 
-## Data Sources and References
+# 4. Live Demo & Screenshots
 
-The following official resources can support the development and validation of the platform:
+## Live Application
 
-- [NASA Open APIs](https://api.nasa.gov/) — NASA API documentation and available datasets.
-- [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/) — Satellite-based active fire information.
-- [NASA Earthdata](https://www.earthdata.nasa.gov/) — Earth science data and documentation.
-- [NASA POWER](https://power.larc.nasa.gov/) — Meteorological and solar data services.
-- [USGS Earthquake Catalog](https://earthquake.usgs.gov/earthquakes/search/) — Earthquake event records.
-- [OpenWeather](https://openweathermap.org/api) — Weather API documentation, if used by the project.
+**[Open Fox Disaster Watch](https://fox-disaster-sentinel.lovable.app)**
 
-Data should be attributed to its original provider, with observation dates, retrieval timestamps, units, and relevant limitations wherever possible.
+## Source Code
 
-## Getting Started
+**[View the GitHub Repository](https://github.com/pranaydahat9-hash/NASA_b_big_fox_NSA-04-1447)**
 
-### Prerequisites
+## Application Screenshots
 
-Install the following tools before running the project locally:
+Add screenshots captured directly from the deployed application or local running build.
 
-- [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/) with a compatible npm version
+| Dashboard | Interactive Map |
+|---|---|
+| Add actual dashboard screenshot | Add actual map screenshot |
 
-### Installation
+| Prevention and Alerts | Reports and Assistant |
+|---|---|
+| Add actual prevention screenshot | Add actual reports or assistant screenshot |
 
-**1. Clone the repository**
+**Demo Video:** To be added if available.
+
+Screenshots and video should demonstrate the actual application. Do not use mockups as evidence of implemented functionality.
+
+---
+
+# 5. Installation & Setup Guide
+
+## Prerequisites
+
+- Git
+- Node.js and npm
+- API credentials required by the configured services, if applicable
+
+## Installation Steps
+
+### Step 1: Clone the repository
 
 ```bash
 git clone https://github.com/pranaydahat9-hash/NASA_b_big_fox_NSA-04-1447.git
 ```
 
-**2. Open the project directory**
+### Step 2: Navigate to the project directory
 
 ```bash
 cd NASA_b_big_fox_NSA-04-1447
 ```
 
-**3. Install dependencies**
+### Step 3: Install dependencies
 
 ```bash
 npm install
 ```
 
-**4. Configure environment variables**
+### Step 4: Configure environment variables
 
-Review the project's environment configuration and documentation. Add the API keys and service credentials required by the actual implementation.
+Review the repository's environment configuration and any available `.env.example` file.
 
-If the project provides an `.env.example` file, use it as a reference for creating your local `.env` file.
+Configure the API keys and service credentials required by the actual implementation. Never commit private keys, passwords, or secrets to the repository.
 
-Never commit API secrets, private keys, passwords, or other sensitive credentials to GitHub.
-
-**5. Start the development server**
+### Step 5: Start the development server
 
 ```bash
 npm run dev
 ```
 
-Open the local URL printed in the terminal to access the application.
+Open the local URL displayed in the terminal.
 
-> These commands assume the repository contains a Node.js-based web application with the corresponding npm scripts. Follow the actual project configuration if the setup differs.
+**Note:** These instructions assume the repository contains a Node.js web application with the relevant npm scripts. Confirm the actual project configuration before submission.
 
-## Data Accuracy and Limitations
+## Troubleshooting
 
-Fox Disaster Sentinel aims to prioritize trustworthy information and transparent risk communication.
+- Check that the installed Node.js version is compatible with the project.
+- Verify that all dependencies install successfully.
+- Confirm required API credentials and environment variables.
+- Check the browser console and terminal for errors.
+- Verify network connectivity and the availability of external APIs.
 
-- **Source transparency:** Show the origin and timestamp of relevant observations.
-- **No fabricated readings:** Do not present invented environmental measurements as real NASA or government data.
-- **Clear uncertainty:** Distinguish measured conditions, official warnings, forecasts, and experimental predictions.
-- **Geographical relevance:** Associate observations with the correct coordinates, region, and time period.
-- **Responsible interpretation:** Historical trends do not guarantee future outcomes.
-- **API availability:** External services may require credentials, impose usage limits, or experience interruptions.
-- **Emergency limitations:** The application does not replace official warnings, trained emergency services, or local authorities.
+## Data Sources and References
 
-Not every hazard can be predicted reliably. For example, earthquake occurrence cannot currently be forecast with dependable precision for a specific location and time. Any hazard assessment should communicate these limitations clearly.
+The following official resources are relevant to the project's intended data integrations:
 
-## Future Development
+- [NASA Open APIs](https://api.nasa.gov/)
+- [NASA FIRMS](https://firms.modaps.eosdis.nasa.gov/)
+- [NASA Earthdata](https://www.earthdata.nasa.gov/)
+- [NASA POWER](https://power.larc.nasa.gov/)
+- [USGS Earthquake Catalog](https://earthquake.usgs.gov/earthquakes/search/)
 
-Potential improvements include:
-
-- Expanded NASA Earth observation integrations.
-- More robust location-specific hazard analysis.
-- Historical event validation and prediction-performance evaluation.
-- Improved flood and water-level monitoring where suitable data is available.
-- Interactive safe-zone maps and evacuation information.
-- Multilingual accessibility and offline emergency resources.
-- Reliable voice-assisted emergency workflows.
-- Automated PDF report generation with traceable sources.
-- Better handling of API failures, missing data, and uncertainty.
-
-## Project Links
-
-- **Live Application:** [https://fox-disaster-sentinel.lovable.app](https://fox-disaster-sentinel.lovable.app)
-- **GitHub Repository:** [https://github.com/pranaydahat9-hash/NASA_b_big_fox_NSA-04-1447](https://github.com/pranaydahat9-hash/NASA_b_big_fox_NSA-04-1447)
-- **Development Platform:** [https://lovable.dev/](https://lovable.dev/)
-- **NASA Space Apps Challenge:** [https://www.spaceappschallenge.org/](https://www.spaceappschallenge.org/)
-
-## Acknowledgements
-
-This project was developed as part of the NASA Space Apps Challenge, with the goal of exploring how Earth observation data, mapping, and digital technologies can contribute to disaster awareness and preparedness.
-
-We acknowledge NASA and other public data providers for making scientific information available to developers, researchers, and communities.
-
-## Disclaimer
-
-Fox Disaster Sentinel is an informational and preparedness-oriented project. Its outputs depend on the availability, quality, and interpretation of the underlying data and services. It is not a substitute for official emergency alerts, professional assessments, or instructions from local authorities.
-
-Always follow verified warnings and guidance issued by the relevant emergency management agencies.
+These links are references for potential data sources. Their inclusion does not imply that every service has been integrated into the application.
 
 ---
 
-**Fox Disaster watch  — Understand the risk. Prepare early. Protect lives.**
+# 6. AI Usage Disclosure
+
+## AI Tool Used
+
+**Lovable** — AI-assisted application development platform.
+
+## Scope of AI Assistance
+
+Lovable was used as an AI-assisted development tool for the project. Depending on the actual development workflow, its assistance may have included generating or modifying application code, developing interface components, and implementing requested features.
+
+## Human Contribution and Verification
+
+The team is responsible for reviewing and validating the submitted application, including:
+
+- Reviewing the generated implementation.
+- Checking feature behaviour and application navigation.
+- Testing data integrations and location-based information.
+- Verifying the accuracy and source attribution of displayed data.
+- Testing emergency workflows before relying on them.
+- Ensuring documentation accurately reflects the submitted project.
+
+## Transparency Statement
+
+AI assistance was used through Lovable. This disclosure should be updated if any additional AI tools were used during development, testing, or documentation.
+
+All feature claims and technology descriptions should be checked against the final repository before submission.
+
+---
+
+## Data Accuracy and Safety Disclaimer
+
+Fox Disaster Watch is an informational disaster awareness and preparedness project. The accuracy of its outputs depends on the availability, quality, and interpretation of its data sources and services.
+
+The application does not replace official emergency warnings, professional assessments, or instructions from local authorities. Historical trends and experimental risk assessments cannot guarantee that a disaster will occur at a particular place or time.
+
+Users should follow verified alerts and guidance from relevant emergency management agencies.
+
+---
+
+**Fox Disaster Watch — Understand the Risk. Prepare Early. Protect Lives.**
+
 
 
 
