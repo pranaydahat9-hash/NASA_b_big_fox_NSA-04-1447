@@ -1,4 +1,4 @@
-# Fox Disaster Watch 🦊
+# Fox Disaster Watch 
 ### Disaster Awareness, Risk Analysis & Preparedness
 
 **Team:** B Big Fox  
