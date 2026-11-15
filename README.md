@@ -1,4 +1,4 @@
-<img width="768" height="1280" alt="WhatsApp Image 2026-11-15 at 1 35 46 PM" src="https://github.com/user-attachments/assets/bbd247d7-76a3-4db0-a88e-ce654363f10a" />
+
 # Fox Disaster Watch 
 ### Disaster Awareness, Risk Analysis & Preparedness
 
@@ -181,7 +181,7 @@ Only technologies and services confirmed in the source code should be identified
 <img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 42 PM (1)" src="https://github.com/user-attachments/assets/dbcbda2f-68a8-472d-8ffc-12e1643eedec" />
 <img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 43 PM" src="https://github.com/user-attachments/assets/9941f0e4-ae39-4eda-974f-9f38f9d1c324" />
 <img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 43 PM (1)" src="https://github.com/user-attachments/assets/bdad5ec9-6706-4709-a7e4-e5f55b673169" />
-
+<img width="768" height="1280" alt="WhatsApp Image 2026-11-15 at 1 35 46 PM" src="https://github.com/user-attachments/assets/bbd247d7-76a3-4db0-a88e-ce654363f10a" />
 
 ## Application Screenrecording
 
