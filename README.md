@@ -165,20 +165,6 @@ Only technologies and services confirmed in the source code should be identified
 
 ## Application Screenshots
 
-Add screenshots captured directly from the deployed application or local running build.
-
-| Dashboard | Interactive Map |
-|---|---|
-| Add actual dashboard screenshot | Add actual map screenshot |
-
-| Prevention and Alerts | Reports and Assistant |
-|---|---|
-| Add actual prevention screenshot | Add actual reports or assistant screenshot |
-
-**Demo Video:** To be added if available.
-
-Screenshots and video should demonstrate the actual application. Do not use mockups as evidence of implemented functionality.
-
 ---
 
 # 5. Installation & Setup Guide
