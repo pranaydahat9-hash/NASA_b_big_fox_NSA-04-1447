@@ -1,4 +1,4 @@
-# B fox Disaster Sentinel
+# B fox Disaster Watch
 
 Build an app that We want to build a satellite database disaster management app. 
 We are focusing right now on mobile, Flutter, and all that. We will show that first demo to the judge and then we will think to build the solution. It is a space challenge, a NASA space challenge.  
