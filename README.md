@@ -1,3 +1,4 @@
+<img width="768" height="1280" alt="WhatsApp Image 2026-11-15 at 1 35 46 PM" src="https://github.com/user-attachments/assets/bbd247d7-76a3-4db0-a88e-ce654363f10a" />
 # Fox Disaster Watch 
 ### Disaster Awareness, Risk Analysis & Preparedness
 
