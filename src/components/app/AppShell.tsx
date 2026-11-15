@@ -28,8 +28,8 @@ export function AppShell() {
   const [online, setOnline] = useOnline();
   void setOnline;
   return (
-    <div className="mx-auto min-h-screen w-full max-w-3xl pb-28">
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b bg-background/70 px-4 py-2.5 backdrop-blur-xl">
+    <div className="mx-auto flex h-dvh w-full max-w-3xl flex-col overflow-hidden">
+      <header className="relative z-30 flex shrink-0 items-center justify-between gap-3 border-b bg-background/70 px-4 py-2.5 backdrop-blur-xl">
         <Link to="/dashboard" className="flex items-center gap-2">
           <FoxMark className="h-8 w-8" />
           <div className="leading-tight"><div className="font-display text-lg font-extrabold tracking-tight">B fox</div><div className="text-[10px] font-medium text-muted-foreground">Stay aware. Stay safe.</div></div>
@@ -41,13 +41,13 @@ export function AppShell() {
           <a href="/emergency-kit.html" className="rounded-full border px-2 py-0.5 text-muted-foreground hover:text-foreground">Offline help</a>
         </div>
       </header>
-      <div className="flex justify-end border-b px-4 py-2"><Link to="/community" className={cn('flex items-center gap-2 text-xs font-semibold', loc.pathname === '/community' ? 'text-primary' : 'text-muted-foreground')}><Users className="h-4 w-4" />Nearby Community<span className="text-[9px] text-med">Design</span></Link></div>
-      <main key={loc.pathname} className="px-3 pt-3 sm:px-5">
+      <div className="flex shrink-0 justify-end border-b px-4 py-2"><Link to="/community" className={cn('flex items-center gap-2 text-xs font-semibold', loc.pathname === '/community' ? 'text-primary' : 'text-muted-foreground')}><Users className="h-4 w-4" />Nearby Community<span className="text-[9px] text-med">Design</span></Link></div>
+      <main key={loc.pathname} className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-3 pb-6 pt-3 sm:px-5">
         <Outlet />
       </main>
       <AlertCenter />
-      <nav className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-3xl px-3 pb-[max(env(safe-area-inset-bottom),10px)]">
-        <div className="glass grid grid-cols-6 rounded-2xl p-1">
+      <nav aria-label="Main navigation" className="relative z-40 shrink-0 border-t bg-background px-3 pt-2 pb-[max(env(safe-area-inset-bottom),10px)]">
+        <div className="grid grid-cols-6 rounded-2xl border bg-surface p-1">
           {NAV.map(({ to, key, icon: Icon }) => {
             const active = loc.pathname.startsWith(to);
             return (

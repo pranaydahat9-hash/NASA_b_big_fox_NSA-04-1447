@@ -30,6 +30,7 @@ use the editor.
 <!-- LOVABLE:END -->
 
 ## Application upgrade rules
+- Keep authenticated pages in a viewport-height flex shell with a scrolling main area and an in-flow bottom navigation, so navigation never obscures page content.
 - Execute common B fox commands locally and validate AI actions against allowlists; emergency-information queries must not dispatch SOS.
 - Treat only provider `delivered` as confirmed SMS delivery; refresh statuses through owner-scoped SOS event IDs, never arbitrary provider IDs.
 - Parse and validate FIRMS CSV headers before accepting fire data; unavailable satellite coverage must not be presented as zero detections.
