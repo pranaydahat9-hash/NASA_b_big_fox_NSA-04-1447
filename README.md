@@ -54,7 +54,6 @@ The project emphasizes **early awareness, prevention, and informed decision-maki
 | Hansika Lone | [@hansikalone-ai](https://github.com/hansikalone-ai) | member |
 | Kunal Dewangan | [@kunaldewanga09-oss](https://github.com/kunaldewanga09-oss) | member |
 
-*Note: Confirm each member's institution and engineering/design contribution, and verify that the GitHub profile links match the intended accounts.*
 
 ---
 
