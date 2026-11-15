@@ -165,6 +165,28 @@ Only technologies and services confirmed in the source code should be identified
 
 ## Application Screenshots
 
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 44 PM" src="https://github.com/user-attachments/assets/57f4bcba-cd60-4964-a7c2-ff5c39b08d11" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 31 PM" src="https://github.com/user-attachments/assets/527b09a3-ddf0-4d17-a9b6-cedeb9911b98" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 33 PM" src="https://github.com/user-attachments/assets/28e80997-b931-49ca-9170-90903f8ec241" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 35 PM" src="https://github.com/user-attachments/assets/ae4c6952-f251-4ff9-a299-10cdc30c247b" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 37 PM" src="https://github.com/user-attachments/assets/3e748d42-f121-47e1-8d11-b0bf1e3a2fff" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 39 PM" src="https://github.com/user-attachments/assets/24843296-e592-40e4-a095-85b06be8c935" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 39 PM (1)" src="https://github.com/user-attachments/assets/bd36ae2c-4b22-413c-ac87-07f40e0bb642" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 40 PM" src="https://github.com/user-attachments/assets/56c8561f-2894-43a4-89dc-787968c2de46" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 40 PM (1)" src="https://github.com/user-attachments/assets/3dad9e71-2b10-40aa-b350-b1aea3eb9be3" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 41 PM" src="https://github.com/user-attachments/assets/90a424b5-d083-4d17-bad6-9f21c6d76caf" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 41 PM (1)" src="https://github.com/user-attachments/assets/b0ec3eba-d50b-492f-a302-c8efb22313d6" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 42 PM" src="https://github.com/user-attachments/assets/6d70ec0a-2131-4a17-bd0e-8a30cde2123f" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 42 PM (1)" src="https://github.com/user-attachments/assets/dbcbda2f-68a8-472d-8ffc-12e1643eedec" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 43 PM" src="https://github.com/user-attachments/assets/9941f0e4-ae39-4eda-974f-9f38f9d1c324" />
+<img width="960" height="1600" alt="WhatsApp Image 2026-11-15 at 1 34 43 PM (1)" src="https://github.com/user-attachments/assets/bdad5ec9-6706-4709-a7e4-e5f55b673169" />
+
+
+## Application Screenrecording
+
+
+
+
 ---
 
 # 5. Installation & Setup Guide
